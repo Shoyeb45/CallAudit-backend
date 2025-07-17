@@ -22,10 +22,12 @@ class AuditFlaggedResponse(BaseModel):
     updated_at: datetime
     created_at: datetime
 
+
 class OneDayAuditData(BaseModel):
     date: datetime
     audited_calls: int
-    
+
+
 class ManagerAnalyticsResponse(BaseResponse):
     total_assigned_leads: int
     total_audited_calls: int
@@ -40,13 +42,14 @@ class AuditorResponse(BaseModel):
     name: str
     total_assigned_leads: int
     total_audited_leads: int
-    
+
+
 class AuditorAnalyticsResponse(BaseResponse):
     number_of_auditors: int
     total_audited_calls: int
     auditors: List[AuditorResponse]
-    
-    
+
+
 # counsellor analysis
 class CounsellorResponse(BaseModel):
     id: str
@@ -54,7 +57,8 @@ class CounsellorResponse(BaseModel):
     email: str
     total_calls: int
 
+
 class CounsellorAnalysisResponse(BaseResponse):
     total_counsellors: int
     total_calls_made: int
-    counsellors: List[CounsellorResponse] 
+    counsellors: List[CounsellorResponse]

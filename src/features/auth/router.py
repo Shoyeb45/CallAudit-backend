@@ -8,7 +8,7 @@ from features.auth.services import AuthService
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter(prefix="/auth", tags=["API endpoints for auth"])
 
 
 @router.post(
