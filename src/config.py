@@ -66,6 +66,21 @@ class AWSSettings(BaseSettings):
         case_sensitive = False
 
 
+class JWT_SETTINGS(BaseSettings):
+    jwt_secret: str = Field(default="jwt_secret", env="JWT_SECRET")
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = 1440
+
+    class Config:
+        env_file = "../.env"
+        case_sensitive = False
+
+
+@lru_cache()
+def get_jwt_settings() -> JWT_SETTINGS:
+    return JWT_SETTINGS()
+
+
 @lru_cache()
 def get_database_settings() -> DatabaseSettings:
     """Get cached database settings instance."""
