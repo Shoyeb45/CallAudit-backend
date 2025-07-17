@@ -22,7 +22,7 @@ def create_server():
             """
             # Startup
             logger.info("Starting up FastAPI application...")
-            create_tables()
+            # create_tables()
             logger.info("Database tables created/verified")
 
             yield
