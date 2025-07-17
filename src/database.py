@@ -2,6 +2,7 @@
 Database connection and session management.
 Handles SQLAlchemy engine creation, session management, and connection pooling.
 """
+
 from sqlalchemy import create_engine, MetaData, event
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
@@ -52,7 +53,7 @@ metadata = MetaData()
 @event.listens_for(engine, "connect")
 def set_sqlite_pragma(dbapi_connection, connection_record):
     """Set database-specific optimizations on connection."""
-    if 'postgresql' in str(dbapi_connection):
+    if "postgresql" in str(dbapi_connection):
         # Set PostgreSQL-specific optimizations
         with dbapi_connection.cursor() as cursor:
             cursor.execute("SET statement_timeout = '30s'")
