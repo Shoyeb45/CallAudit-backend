@@ -4,37 +4,39 @@ from sqlalchemy.orm import Session
 import logging
 
 from dependecy import get_current_user
-from features.auditor.schemas import LoginSchema
+from features.auditor.schemas import (
+    CallsResponseSchema,
+    DashboardAnalysisResponse,
+    LoginSchema,
+)
 from features.auditor.dependency import get_auditor_service
 from features.auditor.services import AuditorService
 from models import Auditor
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/auditor", tags=["auditor"])
+router = APIRouter(prefix="/auditor", tags=["API Endpoints for auditor"])
 
 
-# # API endpoint for logging in
-# @router.post(
-#     "/login",
-#     description="API endpoint for loggin in for auditor",
-#     response_model=LoginSchema,
-# )
-# def login_auditor(
-#     response: Response,
-#     email: str = Form(...),
-#     password: str = Form(...),
-#     service: AuditorService = Depends(get_auditor_service),
-# ):
-#     return service.login_auditor(email, password, response)
+@router.get(
+    "/",
+    description="API endpoint to get audito's dashboard data",
+    response_model=DashboardAnalysisResponse,
+)
+def get_dashboard_data(
+    auditor: Auditor = Depends(get_current_user),
+    service: AuditorService = Depends(get_auditor_service),
+):
+    return service.get_dashboard_data(auditor)
 
 
 @router.get(
     "/calls",
     description="API endpoint to get all the calls belongs to the current auditor",
+    response_model=CallsResponseSchema,
 )
-def get_calls(auditor: Auditor = Depends(get_current_user)):
-
-    if not isinstance(auditor, Auditor):
-        return {"wr": "yes"}
-    return {"s": "fd"}
+def get_calls(
+    auditor: Auditor = Depends(get_current_user),
+    service: AuditorService = Depends(get_auditor_service),
+):
+    return service.get_calls(auditor)
