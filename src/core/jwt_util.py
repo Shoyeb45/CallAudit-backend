@@ -15,7 +15,7 @@ class JWTUtil:
         try:
             to_encode = data.copy()
             expire = datetime.utcnow() + timedelta(
-                minutes=self.jwt_settings.access_token_expire_minutes
+                minutes=self.jwt_settings.access_token_expire_minutes * 60
             )
             to_encode.update({"exp": expire})
             return jwt.encode(
