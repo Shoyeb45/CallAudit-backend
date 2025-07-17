@@ -9,6 +9,7 @@ from features.auditor.schemas import (
     CallsResponseSchema,
     DashboardAnalysisResponse,
     LoginSchema,
+    User,
 )
 from models import Auditor
 
@@ -68,7 +69,12 @@ class AuditorService:
                 max_age=self.jwt_util.access_token_expire_minutes,
             )
 
-            return LoginSchema(success=True, message="Auditor logged in succesfully.")
+            return LoginSchema(success=True, message="Auditor logged in succesfully.", user=User(
+                id=auditor.id,
+                name=auditor.name,
+                email=auditor.email,
+                role="auditor"
+            ))
 
         except HTTPException as http_exception:
             raise http_exception

@@ -4,7 +4,7 @@ from fastapi import HTTPException, status, Response
 from core.jwt_util import get_jwt_util
 from features.manager.repository import ManagerRepository
 from config import get_jwt_settings
-from features.auditor.schemas import LoginSchema
+from features.auditor.schemas import LoginSchema, User
 from features.manager.schemas import (
     AuditorAnalyticsResponse,
     CounsellorAnalysisResponse,
@@ -67,7 +67,12 @@ class ManagerService:
                 max_age=self.jwt_util.access_token_expire_minutes,
             )
 
-            return LoginSchema(success=True, message="Manager logged in succesfully.")
+            return LoginSchema(success=True, message="Manager logged in succesfully.", user=User(
+                id=manager.id,
+                name=manager.name,
+                email=manager.email,
+                role="manager"
+            ))
 
         except HTTPException as http_exception:
             raise http_exception
