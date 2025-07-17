@@ -1,12 +1,12 @@
 import logging
-from sqlalchemy import and_, desc
+from sqlalchemy import and_, desc, select, func, cast, Date
 from sqlalchemy.orm import Session
 from typing import Optional
 from models import Counsellor, Manager, Lead, AuditReport, Call, Auditor
-from features.manager.schemas import AuditFlaggedResponse, AuditorResponse
-from typing import List
+from features.manager.schemas import AuditFlaggedResponse, AuditorResponse, CounsellorResponse, OneDayAuditData
+from typing import List, Dict, Any
 from sqlalchemy import func
-
+from datetime import datetime, timedelta
 logger = logging.getLogger(__name__)
 
 
@@ -148,6 +148,39 @@ class ManagerRepository:
                 "total_audited_calls": result.total_audited_calls
             }
         except Exception as e:
+            logger.error(f"Failed to get auditor and call counts, Error: {e}")
+            return None
+        
+    def get_last_7_days_audited_calls(self, manager_id: str) -> List[OneDayAuditData] | None:
+        try:
+            logger.info("Getting last 7 days audited data data")
+            
+            today = datetime.utcnow().date()
+            seven_days_ago = today - timedelta(days=6)  
+            
+            results = self.db.query(
+                cast(Call.call_start, Date).label("date"),
+                func.count(Call.id).label("audited_calls")
+            ).filter(
+                Call.manager_id == manager_id,
+                Call.is_audited.is_(True),
+                cast(Call.call_start, Date) >= seven_days_ago
+            ).group_by(
+                cast(Call.call_start, Date)
+            ).order_by(
+                cast(Call.call_start, Date)
+            ).all()      
+
+    
+            final_response: List[OneDayAuditData] = []
+            for result in results:
+                final_response.append(OneDayAuditData(
+                    date=result.date,
+                    audited_calls=result.audited_calls
+                ))
+            
+            return final_response
+        except Exception as e:
             print(f"Failed to get auditor and call counts, Error: {e}")
             return None
         
@@ -183,5 +216,52 @@ class ManagerRepository:
         except Exception as e:
             print(f"Failed to get auditor and call counts, Error: {e}")
             return None
+        
+    def get_counsellor_data(self, manager_id: str) -> Dict[str, Any] | None:
+        try:
+            logger.info("Getting counsellor data...")
+           
+            result = self.db.query(
+                select(func.count()).select_from(Counsellor).filter(Counsellor.manager_id == manager_id).scalar_subquery().label("total_counsellors"),
+                select(func.count()).select_from(Call).filter(Call.manager_id == manager_id).scalar_subquery().label("total_calls_made")
+            ).one()
+            
+            return {
+                "total_counsellors": result.total_counsellors,
+                "total_calls_made": result.total_calls_made   
+            }
+        except Exception as e:
+            logger.error(f"Failed to get counsellor analysis, Error: {e}")
+            return None
+        
+    def get_counsellors(self, manager_id: str) -> List[CounsellorResponse] | None:
+        try:
+            logger.info("Getting counsellors...")
+            counsellors = self.db.query(
+                Counsellor.id,
+                Counsellor.name,
+                Counsellor.email,
+                func.count(Call.id).label("total_calls")
+            ).outerjoin(Call, Call.counsellor_id == Counsellor.id
+            ).filter(Counsellor.manager_id == manager_id
+            ).group_by(Counsellor.id, Counsellor.name, Counsellor.email
+            ).all()
+
+            final_response: List[CounsellorResponse] = []
+            
+            for counsellor in counsellors:
+                final_response.append(CounsellorResponse(
+                    id=counsellor.id,
+                    name=counsellor.name,
+                    email=counsellor.email,
+                    total_calls=counsellor.total_calls
+                )) 
+                
+            return final_response
+        except Exception as e:
+            print(f"Failed to get counsellors, Error: {e}")
+            return None
+        
+        
         
         

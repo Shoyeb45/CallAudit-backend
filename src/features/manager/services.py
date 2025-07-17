@@ -5,7 +5,7 @@ from core.jwt_util import get_jwt_util
 from features.manager.repository import ManagerRepository
 from config import get_jwt_settings
 from features.auditor.schemas import LoginSchema
-from features.manager.schemas import AuditorAnalyticsResponse, ManagerAnalyticsResponse
+from features.manager.schemas import AuditorAnalyticsResponse, CounsellorAnalysisResponse, ManagerAnalyticsResponse
 from models import Manager
 
 logger = logging.getLogger(__name__)
@@ -87,9 +87,10 @@ class ManagerService:
             audits = self.repo.get_all_audit(manager_id=manager.id)
             flagged_calls = self.repo.get_all_flagged_call(manager_id=manager.id)
             latest_flagged_audit = self.repo.get_all_latest_flagged_audit(manager.id)
-
+            last_7_days_data = self.repo.get_last_7_days_audited_calls(manager.id)
+            
             if any(
-                x is None for x in [leads, audits, flagged_calls, latest_flagged_audit]
+                x is None for x in [leads, audits, flagged_calls, latest_flagged_audit, last_7_days_data]
             ):
                 logger.error("leads/audits/flagged_calls/latest_flagged_audit is None")
                 raise HTTPException(
@@ -104,6 +105,7 @@ class ManagerService:
                 total_audited_calls=audits,
                 flagged_calls=flagged_calls,
                 latest_flagged_audit=latest_flagged_audit,
+                last_7_days_data=last_7_days_data
             )
         except HTTPException as e:
             raise e
@@ -143,9 +145,25 @@ class ManagerService:
                 detail="Internal server error while getting audit analysis.",
             )
             
-    def get_counsellor_analysis(self, manager: Manager):
+    def get_counsellor_analysis(self, manager: Manager) -> CounsellorAnalysisResponse:
         try:
-            pass
+            counsellor_data = self.repo.get_counsellor_data(manager.id)
+            counsellors = self.repo.get_counsellors(manager.id)
+            
+            if not counsellors or not counsellor_data:
+                logger.error("counsellor_data or counsellors is none")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Internal sever error occurred while fetching counsellor data"
+                )
+            
+            return CounsellorAnalysisResponse(
+                success=True,
+                message="Succesfully retrieved counsellors data",
+                total_counsellors=counsellor_data['total_counsellors'],
+                total_calls_made=counsellor_data['total_counsellors'],
+                counsellors=counsellors
+            )
         except HTTPException as e:
             raise e
         except Exception as e:
@@ -154,6 +172,8 @@ class ManagerService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Internal server error while getting counsellor analysis.",
             )
+            
+    
         
         
     

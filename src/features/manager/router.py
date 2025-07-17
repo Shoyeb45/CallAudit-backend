@@ -3,7 +3,7 @@ import logging
 
 from dependecy import get_current_user
 from features.auditor.schemas import LoginSchema
-from features.manager.schemas import AuditorAnalyticsResponse, ManagerAnalyticsResponse
+from features.manager.schemas import AuditorAnalyticsResponse, CounsellorAnalysisResponse, ManagerAnalyticsResponse
 from features.manager.dependency import get_manager_service
 from features.manager.services import ManagerService
 from models import Manager
@@ -40,7 +40,7 @@ def get_auditor_analytics(
 @router.get(
     "/counsellor",
     description="Get counsellors analysis",
-    # response_model=AuditorAnalyticsResponse   
+    response_model=CounsellorAnalysisResponse   
 )
 def get_counsellor_analysis(
     manager: Manager = Depends(get_current_user),
