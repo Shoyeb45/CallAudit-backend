@@ -1,21 +1,19 @@
 import logging
 
 from fastapi import HTTPException, status, Response
+from core.jwt_util import get_jwt_util
 from features.auditor.repository import AuditorRepository
 from config import get_jwt_settings
 from features.auditor.schemas import LoginSchema
 
 logger = logging.getLogger(__name__)
-from datetime import datetime, timedelta
-
-
-from jose import JWTError, jwt
 
 
 class AuditorService:
     def __init__(self, repo: AuditorRepository):
         self.repo = repo
-        self.jwt_settings = get_jwt_settings()
+        self.jwt_util = get_jwt_util()
+        
     def login_auditor(
         self, email: str, password: str, response: Response
     ) -> LoginSchema:
@@ -38,8 +36,8 @@ class AuditorService:
                 )
 
             # generate jwt
-            token = self.__create_jwt_token(
-                {"id": auditor.id, "name": auditor.name, "email": auditor.email}
+            token = self.jwt_util.create_jwt_token(
+                { "id": auditor.id, "name": auditor.name, "email": auditor.email, "role": "auditor" }
             )
 
             if not token:
@@ -55,7 +53,7 @@ class AuditorService:
                 httponly=True,
                 secure=False,  # Set True if HTTPS
                 samesite="lax",  # or 'strict' or 'none'
-                max_age=self.jwt_settings.access_token_expire_minutes,
+                max_age=self.jwt_util.access_token_expire_minutes,
             )
 
             return LoginSchema(success=True, message="Auditor logged in succesfully.")
@@ -68,20 +66,3 @@ class AuditorService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Internal server error occurred while auditor login",
             )
-
-    # Util methods:
-    def __create_jwt_token(self, data: dict) -> str | None:
-        try:
-            to_encode = data.copy()
-            expire = datetime.utcnow() + timedelta(
-                minutes=self.jwt_settings.access_token_expire_minutes
-            )
-            to_encode.update({"exp": expire})
-            return jwt.encode(
-                to_encode,
-                self.jwt_settings.jwt_secret,
-                algorithm=self.jwt_settings.algorithm,
-            )
-        except Exception as e:
-            logger.error("Failed to generate jwt token")
-            return None
