@@ -67,12 +67,16 @@ class ManagerService:
                 max_age=self.jwt_util.access_token_expire_minutes,
             )
 
-            return LoginSchema(success=True, message="Manager logged in succesfully.", user=User(
-                id=manager.id,
-                name=manager.name,
-                email=manager.email,
-                role="manager"
-            ))
+            return LoginSchema(
+                success=True,
+                message="Manager logged in succesfully.",
+                user=User(
+                    id=manager.id,
+                    name=manager.name,
+                    email=manager.email,
+                    role="manager",
+                ),
+            )
 
         except HTTPException as http_exception:
             raise http_exception

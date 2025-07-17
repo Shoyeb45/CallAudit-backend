@@ -11,10 +11,12 @@ class User(BaseModel):
     email: str
     role: str
 
+
 class LoginSchema(BaseModel):
     success: bool
     message: str
     user: User
+
 
 class BaseResponse(BaseModel):
     success: bool

@@ -1,10 +1,12 @@
 import logging
+from typing import Any, Dict
 
 from fastapi import HTTPException, status, Response
 from core.jwt_util import get_jwt_util
 from features.auditor.repository import AuditorRepository
 from config import get_jwt_settings
 from features.auditor.schemas import (
+    BaseResponse,
     CallStats,
     CallsResponseSchema,
     DashboardAnalysisResponse,
@@ -69,12 +71,16 @@ class AuditorService:
                 max_age=self.jwt_util.access_token_expire_minutes,
             )
 
-            return LoginSchema(success=True, message="Auditor logged in succesfully.", user=User(
-                id=auditor.id,
-                name=auditor.name,
-                email=auditor.email,
-                role="auditor"
-            ))
+            return LoginSchema(
+                success=True,
+                message="Auditor logged in succesfully.",
+                user=User(
+                    id=auditor.id,
+                    name=auditor.name,
+                    email=auditor.email,
+                    role="auditor",
+                ),
+            )
 
         except HTTPException as http_exception:
             raise http_exception
@@ -158,4 +164,18 @@ class AuditorService:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Internal server error occurred while fetching calls",
+            )
+
+    def approve_lead(self, data: Dict[str, Any], auditor: Auditor) -> BaseResponse:
+        try:
+            logger.info("Approve lead api called")
+            self.repo.approve_lead_and_update_db(data, auditor.id)
+            return BaseResponse(success=True, message="Succesfully approved audit")
+        except HTTPException as http_exception:
+            raise http_exception
+        except Exception as e:
+            logger.error(f"Failed to approve leads, error: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Internal server error occurred while approving leads",
             )

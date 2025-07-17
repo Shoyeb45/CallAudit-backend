@@ -1,11 +1,13 @@
 from datetime import datetime, timedelta
 import logging
+from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import Date, cast, func
 from typing import Any, Dict, List, Optional
 from features.auditor.schemas import CallResponse, CallStats, LatestCallResponse
 from features.manager.schemas import OneDayAuditData
 from models import AuditReport, Auditor, Call, CallAnalysis
+from sqlalchemy.exc import SQLAlchemyError
 
 logger = logging.getLogger(__name__)
 
@@ -157,3 +159,87 @@ class AuditorRepository:
         except Exception as e:
             logger.error(f"Failed to fetch latest calls from database, error: {str(e)}")
             return None
+
+    def approve_lead_and_update_db(self, data: Dict[str, Any], auditor_id: str):
+        try:
+            call_id = data.get("call_id")
+            comments = data.get("comments")
+            is_flag = data.get("is_flag")
+            flag_reasons = data.get("flag_reasons")
+
+            if not call_id:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Call ID is required.",
+                )
+
+            # Update Call table
+            call = (
+                self.db.query(Call)
+                .filter(Call.id == call_id, Call.auditor_id == auditor_id)
+                .first()
+            )
+            if not call:
+                logger.error("Call not found for the given auditor.")
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Call not found for the given auditor.",
+                )
+
+            call.is_audited = True  # always mark as audited
+
+            # Update is_flagged if is_flag is not None
+            if is_flag is not None:
+                call.is_flagged = is_flag
+
+            # Update AuditReport
+            audit_report = (
+                self.db.query(AuditReport)
+                .filter(
+                    AuditReport.call_id == call_id, AuditReport.auditor_id == auditor_id
+                )
+                .first()
+            )
+
+            if audit_report:
+                # Update existing report
+                if comments is not None:
+                    audit_report.comments = comments
+                if is_flag is not None:
+                    audit_report.is_flagged = is_flag
+                if flag_reasons is not None:
+                    audit_report.flag_reason = flag_reasons
+                audit_report.updated_at = datetime.utcnow()
+            else:
+                # Create new report
+                logger.error("Audit report not found creating new one.")
+                new_report = AuditReport(
+                    call_id=call_id,
+                    auditor_id=auditor_id,
+                    manager_id=call.manager_id,
+                    score=call.audit_score or 0,  # default to 0 if not set
+                    comments=comments,
+                    is_flagged=is_flag if is_flag is not None else False,
+                    flag_reason=flag_reasons,
+                    created_at=datetime.utcnow(),
+                    updated_at=datetime.utcnow(),
+                )
+                self.db.add(new_report)
+
+            # Commit changes
+            self.db.commit()
+            logger.info("Database update succesfull")
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            logger.error(f"SQLAlchemy error occurred: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Database error occurred while updating call and audit report.",
+            )
+        except Exception as e:
+            self.db.rollback()
+            logger.error(f"Failed to approve lead and update db, error: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Internal server error occurred while approving lead.",
+            )
