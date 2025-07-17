@@ -2,33 +2,33 @@ import logging
 
 from fastapi import HTTPException, status, Response
 from core.jwt_util import get_jwt_util
-from features.auditor.repository import AuditorRepository
+from features.manager.repository import ManagerRepository
 from config import get_jwt_settings
 from features.auditor.schemas import LoginSchema
 
 logger = logging.getLogger(__name__)
 
 
-class AuditorService:
-    def __init__(self, repo: AuditorRepository):
+class ManagerService:
+    def __init__(self, repo: ManagerRepository):
         self.repo = repo
         self.jwt_util = get_jwt_util()
 
-    def login_auditor(
+    def login_manager(
         self, email: str, password: str, response: Response
     ) -> LoginSchema:
         try:
             # find if auditor exists
-            auditor = self.repo.get_auditor(email=email)
-            if not auditor:
-                logger.error("No auditor found with given email")
+            manager = self.repo.get_manager(email=email)
+            if not manager:
+                logger.error("No manager found with given email")
                 raise HTTPException(
-                    detail=f"No auditor found with given email",
+                    detail=f"No manager found with given email",
                     status_code=status.HTTP_404_NOT_FOUND,
                 )
 
             # compare password
-            if auditor.password != password:
+            if manager.password != password:
                 logger.error("Password not matched")
                 raise HTTPException(
                     detail=f"Password not matched",
@@ -38,10 +38,10 @@ class AuditorService:
             # generate jwt
             token = self.jwt_util.create_jwt_token(
                 {
-                    "id": auditor.id,
-                    "name": auditor.name,
-                    "email": auditor.email,
-                    "role": "auditor",
+                    "id": manager.id,
+                    "name": manager.name,
+                    "email": manager.email,
+                    "role": "manager",
                 }
             )
 
@@ -61,13 +61,13 @@ class AuditorService:
                 max_age=self.jwt_util.access_token_expire_minutes,
             )
 
-            return LoginSchema(success=True, message="Auditor logged in succesfully.")
+            return LoginSchema(success=True, message="Manager logged in succesfully.")
 
         except HTTPException as http_exception:
             raise http_exception
         except Exception as e:
-            logger.error(f"Failed to login for auditor, error: {str(e)}")
+            logger.error(f"Failed to login for manager, error: {str(e)}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Internal server error occurred while auditor login",
+                detail=f"Internal server error occurred while manager login",
             )

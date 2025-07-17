@@ -18,8 +18,6 @@ router = APIRouter(prefix="/auditor", tags=["auditor"])
     description="API endpoint for loggin in for auditor",
     response_model=LoginSchema,
 )
-
-
 def login_auditor(
     response: Response,
     email: str = Form(...),

@@ -5,11 +5,12 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class JWTUtil:
     def __init__(self):
         self.jwt_settings = get_jwt_settings()
         self.access_token_expire_minutes = self.jwt_settings.access_token_expire_minutes
-    
+
     def create_jwt_token(self, data: dict) -> str | None:
         try:
             to_encode = data.copy()
@@ -25,6 +26,7 @@ class JWTUtil:
         except Exception as e:
             logger.error("Failed to generate jwt token")
             return None
-        
+
+
 def get_jwt_util():
     return JWTUtil()
