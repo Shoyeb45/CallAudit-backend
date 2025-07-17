@@ -7,11 +7,12 @@ from jose import jwt
 
 from features.auditor.repository import AuditorRepository
 from features.manager.repository import ManagerRepository
+from models import Auditor, Manager
 
 logger = logging.getLogger(__name__)
 
 
-def get_current_user(req: Request, db: Session = Depends(get_db)):
+def get_current_user(req: Request, db: Session = Depends(get_db)) -> Auditor | Manager:
     """Dependency for verifying user and getting current user
 
     Args:
@@ -77,5 +78,5 @@ def get_current_user(req: Request, db: Session = Depends(get_db)):
         logger.error(f"Failed to verify user, error: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal server error",
+            detail="User verification failed",
         )

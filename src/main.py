@@ -21,6 +21,7 @@ import os
 from features.auditor.router import router as auditor_router
 from features.manager.router import router as manager_router
 from features.counsellor.router import router as counsellor_router
+from features.auth.router import router as auth_router
 
 
 # Configure logging
@@ -34,6 +35,7 @@ app = create_server()
 app.include_router(auditor_router, prefix="/api/v1")
 app.include_router(manager_router, prefix="/api/v1")
 app.include_router(counsellor_router, prefix="/api/v1")
+app.include_router(auth_router, prefix="/api/v1")
 
 
 # Register global error
