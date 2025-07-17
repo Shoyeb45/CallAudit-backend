@@ -1,6 +1,11 @@
 # Call Audit Backend
 
 
+## Setup instructions
+
+### 1. Clone the repo
+### 2. Install `uv` 
+### 3. Install all dependencies 
 
 ## Migrations commands:
 

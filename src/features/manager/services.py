@@ -5,6 +5,8 @@ from core.jwt_util import get_jwt_util
 from features.manager.repository import ManagerRepository
 from config import get_jwt_settings
 from features.auditor.schemas import LoginSchema
+from features.manager.schemas import AuditorAnalyticsResponse, ManagerAnalyticsResponse
+from models import Manager
 
 logger = logging.getLogger(__name__)
 
@@ -71,3 +73,87 @@ class ManagerService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Internal server error occurred while manager login",
             )
+
+    def get_manager_analytics(self, manager: Manager):
+        try:
+            if not isinstance(manager, Manager):
+                logger.error("Current user is not manager")
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Current user is not authorized as manager",
+                )
+
+            leads = self.repo.get_all_leads(manager_id=manager.id)
+            audits = self.repo.get_all_audit(manager_id=manager.id)
+            flagged_calls = self.repo.get_all_flagged_call(manager_id=manager.id)
+            latest_flagged_audit = self.repo.get_all_latest_flagged_audit(manager.id)
+
+            if any(
+                x is None for x in [leads, audits, flagged_calls, latest_flagged_audit]
+            ):
+                logger.error("leads/audits/flagged_calls/latest_flagged_audit is None")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Internal server error while fetching data from database",
+                )
+
+            return ManagerAnalyticsResponse(
+                success=True,
+                message="Succesfully analyzed audits for manager",
+                total_assigned_leads=leads,
+                total_audited_calls=audits,
+                flagged_calls=flagged_calls,
+                latest_flagged_audit=latest_flagged_audit,
+            )
+        except HTTPException as e:
+            raise e
+        except Exception as e:
+            logger.error(f"Failed to get manager analysis for manager, error: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Internal server error while getting manager analysis for manager",
+            )
+
+
+    def get_auditors_analytics(self, manager: Manager) -> AuditorAnalyticsResponse:
+        try:
+            auditors_data = self.repo.get_auditor_and_audited_call_counts(manager_id=manager.id)
+            auditors = self.repo.get_auditors(manager.id)
+            
+            if not auditors_data or not auditors:
+                logger.error("Auditors data or auditors is None")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Internal server error occurred while  getting auditors data"
+                )
+                
+            return AuditorAnalyticsResponse(
+                success=True,
+                message="Succesfully got the auditors data under manager",
+                number_of_auditors=auditors_data['number_of_auditors'],
+                total_audited_calls=auditors_data['total_audited_calls'],
+                auditors=auditors
+            )
+        except HTTPException as e:
+            raise e
+        except Exception as e:
+            logger.error(f"Failed to get auditors analysis for manager, error: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Internal server error while getting audit analysis.",
+            )
+            
+    def get_counsellor_analysis(self, manager: Manager):
+        try:
+            pass
+        except HTTPException as e:
+            raise e
+        except Exception as e:
+            logger.error(f"Failed to get counsellor analysis for manager, error: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Internal server error while getting counsellor analysis.",
+            )
+        
+        
+    
