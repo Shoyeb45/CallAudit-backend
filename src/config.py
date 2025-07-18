@@ -76,6 +76,18 @@ class JWT_SETTINGS(BaseSettings):
         case_sensitive = False
 
 
+class LLMConfig(BaseSettings):
+    elevenlabs_api_key: str = Field(default="", env="ELEVENLABS_API_KEY")
+    azure_openai_endpoint: str = Field(default="", env="AZURE_OPENAI_ENDPOINT")
+    azure_openai_api_key: str = Field(default="", env="AZURE_OPENAI_API_KEY")
+    azure_openai_deployment: str = Field(default="", env="AZURE_OPENAI_DEPLOYMENT")
+    azure_openai_api_version: str = Field(default="", env="AZURE_OPENAI_API_VERSION")
+
+    class Config:
+        env_file = "../.env"
+        case_sensitive = False
+
+
 @lru_cache()
 def get_jwt_settings() -> JWT_SETTINGS:
     return JWT_SETTINGS()
@@ -101,3 +113,13 @@ def get_aws_settings() -> AWSSettings:
         AWSSettings: instance with correct settings
     """
     return AWSSettings()
+
+
+@lru_cache()
+def get_llm_config() -> LLMConfig:
+    """Get cached LLM config which contains all the configuration keys of openai and elevenlabs
+
+    Returns:
+        LLMConfig
+    """
+    return LLMConfig()
