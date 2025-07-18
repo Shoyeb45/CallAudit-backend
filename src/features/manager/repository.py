@@ -37,8 +37,8 @@ class ManagerRepository:
         try:
             logger.info(f"Getting all leads for manager with id: {manager_id}")
             count = (
-                self.db.query(func.count(Lead.id))
-                .filter(Lead.manager_id == manager_id)
+                self.db.query(func.count(Call.id))
+                .filter(Call.manager_id == manager_id)
                 .scalar()
             )
 
