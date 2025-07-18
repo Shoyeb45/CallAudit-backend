@@ -23,7 +23,7 @@ alembic upgrade head
 
 ```
 Managers:
-  Email: john.smith@company.com, Password: manager123
+  Email:  , Password: manager123
   Email: sarah.johnson@company.com, Password: manager123
 
 Auditors:
@@ -32,3 +32,5 @@ Auditors:
   Email: david.brown@company.com, Password: auditor123
   Email: emma.davis@company.com, Password: auditor123
 ```
+
+

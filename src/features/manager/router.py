@@ -6,6 +6,7 @@ from features.auditor.schemas import LoginSchema
 from features.manager.schemas import (
     AuditorAnalyticsResponse,
     CounsellorAnalysisResponse,
+    FlaggedAuditsResponse,
     ManagerAnalyticsResponse,
 )
 from features.manager.dependency import get_manager_service
@@ -27,6 +28,18 @@ def get_dashboard_data_for_manager(
     service: ManagerService = Depends(get_manager_service),
 ):
     return service.get_manager_analytics(manager)
+
+
+@router.get(
+    "/flagged-audits",
+    description="API endpoint to get total flagged audits.",
+    response_model=FlaggedAuditsResponse,
+)
+def get_flagged_audits(
+    manager: Manager = Depends(get_current_user),
+    service: ManagerService = Depends(get_manager_service),
+):
+    return service.get_flagged_audits(manager)
 
 
 @router.get(

@@ -62,3 +62,8 @@ class CounsellorAnalysisResponse(BaseResponse):
     total_counsellors: int
     total_calls_made: int
     counsellors: List[CounsellorResponse]
+
+
+# FlaggedAuditsResponse
+class FlaggedAuditsResponse(BaseResponse):
+    flagged_audits: List[AuditFlaggedResponse]

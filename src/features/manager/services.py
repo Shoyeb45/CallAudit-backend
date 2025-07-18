@@ -8,6 +8,7 @@ from features.auditor.schemas import LoginSchema, User
 from features.manager.schemas import (
     AuditorAnalyticsResponse,
     CounsellorAnalysisResponse,
+    FlaggedAuditsResponse,
     ManagerAnalyticsResponse,
 )
 from models import Manager
@@ -196,4 +197,31 @@ class ManagerService:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Internal server error while getting counsellor analysis.",
+            )
+
+    def get_flagged_audits(self, manager: Manager) -> FlaggedAuditsResponse:
+        try:
+            logger.info("API endpoint called for getting flagged audits")
+
+            flagged_audits = self.repo.get_all_latest_flagged_audit(manager.id)
+
+            if not flagged_audits:
+                logger.error("Failed to get flagged audits")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Internal server error occurred while fetching flagged audits.",
+                )
+
+            return FlaggedAuditsResponse(
+                success=True,
+                message="Succesfully retrieved the flagged audits",
+                flagged_audits=flagged_audits,
+            )
+        except HTTPException as e:
+            raise e
+        except Exception as e:
+            logger.error(f"Failed to get flagged audits for manager, error: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Internal server error while getting flagged audits.",
             )
