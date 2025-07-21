@@ -53,7 +53,11 @@ class Auditor(Base):
 
     # Relationships
     manager = relationship("Manager", back_populates="auditors")
-    counsellors = relationship("Counsellor", back_populates="auditor")
+    counsellors = relationship(
+        "Counsellor",
+        back_populates="auditor",
+        cascade="all, delete-orphan"
+    )
     calls = relationship("Call", back_populates="auditor")
     audit_reports = relationship("AuditReport", back_populates="auditor")
     leads = relationship("Lead", back_populates="auditor")
@@ -63,7 +67,7 @@ class Counsellor(Base):
     __tablename__ = "counsellors"
 
     id = Column(String, primary_key=True, default=generate_uuid)
-    auditor_id = Column(String, ForeignKey("auditors.id"), nullable=False)
+    auditor_id = Column(String, ForeignKey("auditors.id", ondelete="CASCADE"), nullable=False)
     manager_id = Column(String, ForeignKey("managers.id"), nullable=False)
     name = Column(String, nullable=False)
     email = Column(String, nullable=False, unique=True)

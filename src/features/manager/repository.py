@@ -324,3 +324,21 @@ class ManagerRepository:
                 f"Failed to create new counsellor in database, error: {str(e)}"
             )
             return False
+
+    def delete_auditor(self, auditor_id) -> bool: 
+        try:    
+            auditor = self.db.query(Auditor).filter_by(id=auditor_id).first()
+            if not auditor:
+                logger.warning(f"Auditor with ID {auditor_id} does not exist.")
+                return False
+
+            self.db.delete(auditor)
+            self.db.commit()
+
+            logger.info(f"Successfully deleted auditor with ID {auditor_id}")
+            return True
+        except Exception as e:
+            logger.error(
+                f"Failed to delete auditor from database, error: {str(e)}"
+            )
+            return False

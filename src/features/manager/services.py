@@ -10,6 +10,7 @@ from config import get_jwt_settings
 from features.auditor.schemas import LoginSchema, User
 from features.manager.schemas import (
     AuditorAnalyticsResponse,
+    BaseResponse,
     CounsellorAnalysisResponse,
     FlaggedAuditsResponse,
     ManagerAnalyticsResponse,
@@ -352,3 +353,27 @@ class ManagerService:
         random.shuffle(password)
 
         return "".join(password)
+
+
+    def delete_auditor(self, auditor_id) -> BaseResponse:
+        try:
+            is_auditor_deleted = self.repo.delete_auditor(auditor_id)
+            if not is_auditor_deleted:
+                logger.error("Failed to delete auditor")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Internal server error occurred while deleting auditor"
+                )
+            
+            return BaseResponse(
+                success=True,
+                message=f"Succesfull deleted auditor with id: {auditor_id}"
+            )
+        except HTTPException as e:
+            raise e
+        except Exception as e:
+            logger.error(f"Failed to delete auditor, error: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Internal server error occurred while deleting auditor",
+            )
