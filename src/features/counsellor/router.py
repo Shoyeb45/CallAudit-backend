@@ -1,4 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    UploadFile,
+    File,
+    Form,
+    status,
+    BackgroundTasks,
+    Request,
+)
 import logging, os
 
 from features.counsellor.dependency import get_counsellor_service
@@ -14,6 +24,7 @@ router = APIRouter(prefix="/counsellor", tags=["counsellor"])
     description="API endpoint to upload the audio in s3 and perform AI analysis.",
 )
 async def upload_audio_and_perform_ai_analysis(
+    request: Request,
     call_recording: UploadFile = File(...),
     call_start: str = Form(...),
     call_end: str = Form(...),
@@ -34,6 +45,7 @@ async def upload_audio_and_perform_ai_analysis(
         logger.info("Successfully saved call recoding file in temp directory")
 
         return service.process_call_recording(
+            request.app.state.s3_saver,
             temp_path,
             call_start,
             call_end,
@@ -49,5 +61,5 @@ async def upload_audio_and_perform_ai_analysis(
         logger.error(f"Error occurred while processing audio, error: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to processa audio",
+            detail="Failed to process audio",
         )

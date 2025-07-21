@@ -213,6 +213,24 @@ class AzureOpenAIService:
         except Exception as e:
             return {"summary": f"Summary generation failed: {str(e)}", "usage": None}
 
+    def detect_anomalies(self, transcript):
+        prompt = (
+            "Identify emotional triggers or anomalies in this transcript:\n"
+            "- Conflict points\n- Sudden tone shifts\n- Confusion or contradiction"
+        )
+        response = self.client.chat.completions.create(
+            model=self.deployment,
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a conversation anomaly detector.",
+                },
+                {"role": "user", "content": transcript},
+            ],
+            max_tokens=500,
+        )
+        return response.choices[0].message.content.strip()
+
     def _format_speaker_info(self, speakers_data: Dict) -> str:
         formatted = []
         for speaker_tag, data in speakers_data.items():
@@ -225,3 +243,90 @@ class AzureOpenAIService:
                 f"  - Average confidence: {data.get('avg_confidence', 0):.2f}\n"
             )
         return "\n".join(formatted)
+
+    def get_customer_sentiment_score(self, transcript: str) -> int:
+        try:
+            prompt = (
+                "Analyze the following conversation and return only one number as output:\n\n"
+                "- Return 1 if the customer's overall sentiment is positive (interested, happy, satisfied)\n"
+                "- Return 0 if the customer's sentiment is neutral (uncertain, general inquiry)\n"
+                "- Return -1 if the customer sounds negative (angry, upset, disinterested)\n\n"
+                "Do not explain. Just return one of these numbers: 1, 0, or -1.\n\n"
+                f"Transcript:\n{transcript}".strip()
+            )
+
+            response = self.client.chat.completions.create(
+                model=self.deployment,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are a call center sentiment analysis model.",
+                    },
+                    {"role": "user", "content": prompt},
+                ],
+                max_tokens=5,
+                temperature=0,
+            )
+
+            result = response.choices[0].message.content.strip()
+            score = int(result)
+            assert score in [-1, 0, 1]
+            return score
+        except Exception as e:
+            raise e
+
+    def extract_keywords(self, transcript):
+        prompt = "Extract 5 to 10 keywords from this transcript (comma-separated):"
+        response = self.client.chat.completions.create(
+            model=self.deployment,
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You extract keywords from customer transcripts.",
+                },
+                {"role": "user", "content": transcript},
+            ],
+            max_tokens=50,
+        )
+        return [kw.strip() for kw in response.choices[0].message.content.split(",")]
+
+    def _format_speaker_info(self, speakers_data: Dict) -> str:
+        formatted = []
+        for speaker_tag, data in speakers_data.items():
+            formatted.append(f"Speaker {speaker_tag}:")
+            formatted.append(f"  - Total words: {data.get('word_count', 0)}")
+            formatted.append(
+                f"  - Speaking time: {data.get('total_duration', 0):.2f} seconds"
+            )
+            formatted.append(
+                f"  - Average confidence: {data.get('avg_confidence', 0):.2f}\n"
+            )
+        return "\n".join(formatted)
+
+    def get_sentiment(self, transcript):
+        prompt = (
+            "Classify the customer's overall sentiment:\n"
+            "- Return 1 if positive\n- 0 if neutral\n- -1 if negative\n\n"
+            "Transcript:\n" + transcript
+        )
+        response = self.client.chat.completions.create(
+            model=self.deployment,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=5,
+            temperature=0,
+        )
+        try:
+            return int(response.choices[0].message.content.strip())
+        except:
+            return 0
+
+    def estimate_ai_confidence(self, usage: Dict) -> float:
+        """Estimate AI's confidence score based on token ratio"""
+        try:
+            prompt_tokens = usage.get("prompt_tokens", 1)
+            total_tokens = usage.get("total_tokens", 1)
+            ratio = prompt_tokens / total_tokens
+            confidence_score = round(1.0 - ratio, 2)
+            return confidence_score
+        except Exception:
+            return 0.5
