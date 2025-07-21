@@ -58,11 +58,11 @@ class AuditorRepository:
                         client_number=result.client_number,
                         duration=result.duration,
                         tags=result.tags,
-                        ai_confidence=result.ai_confidence,
+                        ai_confidence=result.ai_confidence or 0,
                         recording_url=result.recording_url,
-                        summary=result.summary,
-                        sentiment_score=int(result.sentiment_score),
-                        anomalies=result.anomalies,
+                        summary=result.summary or "no_summary",
+                        sentiment_score=int(result.sentiment_score or 0),
+                        anomalies=result.anomalies or "no_anomalies",
                     )
                 )
 
