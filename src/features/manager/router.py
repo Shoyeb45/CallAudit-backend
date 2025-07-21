@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter, Response, Form, Depends
 import logging
 
@@ -64,3 +65,16 @@ def get_counsellor_analysis(
     service: ManagerService = Depends(get_manager_service),
 ):
     return service.get_counsellor_analysis(manager)
+
+
+@router.post("/add", description="API endpoint to add new auditor")
+def add_auditor(
+    role: str = Form(...),
+    name: str = Form(...),
+    email: str = Form(...),
+    phone: str = Form(...),
+    auditor_id: Optional[str] = Form(None),
+    manager: Manager = Depends(get_current_user),
+    service: ManagerService = Depends(get_manager_service),
+):
+    return service.add_new_user(role, name, email, phone, auditor_id, manager.id)

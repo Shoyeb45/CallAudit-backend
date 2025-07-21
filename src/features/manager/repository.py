@@ -1,4 +1,6 @@
 import logging
+import random
+import string
 from sqlalchemy import and_, desc, select, func, cast, Date
 from sqlalchemy.orm import Session
 from typing import Optional
@@ -296,3 +298,29 @@ class ManagerRepository:
         except Exception as e:
             print(f"Failed to get counsellors, Error: {e}")
             return None
+
+    def create_auditor(self, auditor_data) -> bool:
+        try:
+            auditor = Auditor(**auditor_data)
+            self.db.add(auditor)
+            self.db.commit()
+            self.db.refresh(auditor)
+            logger.info("Succesfully created new auditor in database")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to create new auditor in database, error: {str(e)}")
+            return False
+
+    def create_counsellor(self, counsellor_data) -> bool:
+        try:
+            counsellor = Counsellor(**counsellor_data)
+            self.db.add(counsellor)
+            self.db.commit()
+            self.db.refresh(counsellor)
+            logger.info("Succesfully created new counsellor in database")
+            return True
+        except Exception as e:
+            logger.error(
+                f"Failed to create new counsellor in database, error: {str(e)}"
+            )
+            return False

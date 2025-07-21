@@ -13,9 +13,9 @@ class CounsellorRepository:
         """Create a new call record"""
         try:
             logger.info("Adding call in database")
-            
+
             counsellor = (
-            self.db.query(Counsellor)
+                self.db.query(Counsellor)
                 .filter(Counsellor.id == call_data["counsellor_id"])
                 .first()
             )
@@ -27,7 +27,7 @@ class CounsellorRepository:
             # Automatically set auditor_id and manager_id
             call_data["auditor_id"] = counsellor.auditor_id
             call_data["manager_id"] = counsellor.manager_id
-            
+
             call = Call(**call_data)
             self.db.add(call)
             self.db.commit()

@@ -156,14 +156,14 @@ class CounsellorService:
             }
 
             azure_service = AzureOpenAIService()
-            
+
             logger.info("Analyzing conversation")
             analysis_result = azure_service.analyze_conversation(
                 transcript=transcription_result["full_transcript"],
                 speakers_data=speaker_analysis,
             )
             logger.info("Succesfully anlayzed conversation")
-            
+
             logger.info("Generating summary")
             summary_result = azure_service.generate_conversation_summary(
                 transcript=transcription_result["full_transcript"],
@@ -171,25 +171,24 @@ class CounsellorService:
             )
             logger.info("Succesfully generated summary")
 
-
             logger.info("Getting sentiment score")
             sentiment_score = azure_service.get_customer_sentiment_score(
                 transcription_result["full_transcript"]
             )
             logger.info("Succesfully generated sentiment score")
-            
+
             logger.info("Getting anomalies")
             anomalies = azure_service.detect_anomalies(
                 transcription_result["full_transcript"]
             )
             logger.info("Succesfully generated anomalies")
-            
+
             logger.info("Extracting keywords")
             keywords = azure_service.extract_keywords(
                 transcription_result["full_transcript"]
             )
             logger.info("Succesfully extracted keywords")
-            
+
             logger.info("Getting ai confidence score")
             confidence = azure_service.estimate_ai_confidence(
                 analysis_result.get("usage", {})

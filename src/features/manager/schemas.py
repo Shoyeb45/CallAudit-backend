@@ -67,3 +67,7 @@ class CounsellorAnalysisResponse(BaseResponse):
 # FlaggedAuditsResponse
 class FlaggedAuditsResponse(BaseResponse):
     flagged_audits: List[AuditFlaggedResponse]
+
+
+class NewUserCreatedSchema(BaseResponse):
+    password: str
