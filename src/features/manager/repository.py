@@ -445,7 +445,7 @@ class ManagerRepository:
             call.updated_at = datetime.utcnow()
             
             self.db.commit()
-            logger.info(f"Succesfully unflagged audit with call id: {call_id}")
+            logger.info(f"Succesfully unflagged audit with audit id: {audit_id}")
             return True
         except Exception as e:
             logger.error(f"Failed to unflag audit, error: {str(e)}")
