@@ -212,10 +212,12 @@ class ManagerRepository:
                 self.db.query(
                     Auditor.id,
                     Auditor.name,
+                    Auditor.is_active,
                     func.count(func.distinct(Lead.id)).label("total_assigned_leads"),
                     func.count(func.distinct(AuditReport.id)).label(
                         "total_audited_leads"
                     ),
+                    
                 )
                 .outerjoin(Lead, Lead.auditor_id == Auditor.id)
                 .outerjoin(AuditReport, AuditReport.auditor_id == Auditor.id)
@@ -231,6 +233,7 @@ class ManagerRepository:
                     AuditorResponse(
                         id=result.id,
                         name=result.name,
+                        is_active=result.is_active,
                         total_assigned_leads=result.total_assigned_leads,
                         total_audited_leads=result.total_audited_leads,
                     )
@@ -274,6 +277,7 @@ class ManagerRepository:
                     Counsellor.id,
                     Counsellor.name,
                     Counsellor.email,
+                    Counsellor.is_active,
                     func.count(Call.id).label("total_calls"),
                 )
                 .outerjoin(Call, Call.counsellor_id == Counsellor.id)
@@ -289,6 +293,7 @@ class ManagerRepository:
                     CounsellorResponse(
                         id=counsellor.id,
                         name=counsellor.name,
+                        is_active=counsellor.is_active,
                         email=counsellor.email,
                         total_calls=counsellor.total_calls,
                     )

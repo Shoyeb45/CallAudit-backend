@@ -38,7 +38,7 @@ class ManagerService:
                     detail=f"No manager found with given email",
                     status_code=status.HTTP_404_NOT_FOUND,
                 )
-        
+
             # compare password
             if manager.password != password:
                 logger.error("Password not matched")
