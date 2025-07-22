@@ -13,6 +13,7 @@ from features.auditor.schemas import (
 )
 from features.auditor.dependency import get_auditor_service
 from features.auditor.services import AuditorService
+from features.manager.schemas import FlaggedAuditsResponse
 from models import Auditor
 
 logger = logging.getLogger(__name__)
@@ -78,3 +79,15 @@ def unflag_flagged_audit(
     service: AuditorService = Depends(get_auditor_service)
 ):
     return service.unflag_flagged_audit(auditor, audit_id)
+
+
+@router.get(
+    "/flagged-audits",
+    description="API endpoint to get total flagged audits.",
+    response_model=FlaggedAuditsResponse,
+)
+def get_flagged_audits(
+    auditor: Auditor = Depends(get_current_user),
+    service: AuditorService = Depends(get_auditor_service),
+):
+    return service.get_flagged_audits(auditor)

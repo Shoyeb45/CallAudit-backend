@@ -16,6 +16,7 @@ from features.auditor.schemas import (
     User,
 )
 from features.manager.dependency import get_manager_repository
+from features.manager.schemas import FlaggedAuditsResponse
 from models import Auditor
 
 
@@ -222,3 +223,46 @@ class AuditorService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Internal server error occurred while unflagging audit",
             )
+            
+    def get_flagged_audits(self, auditor: Auditor) -> FlaggedAuditsResponse:
+        try:
+            if not isinstance(auditor, Auditor):
+                logger.error("User is not auditor")
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Unauthorised access, user is not auditor."
+                )
+                
+            logger.info(f"API endpoint called for getting flagged audits for auditor with id: {auditor.id}")
+
+            flagged_audits = self.repo.get_all_latest_flagged_audit(auditor.id)
+
+            if flagged_audits == []:
+                return FlaggedAuditsResponse(
+                    success=True,
+                    message="Succesfully retrieved the flagged audits",
+                    flagged_audits=flagged_audits,
+                )
+                
+            if not flagged_audits:
+                logger.error("Failed to get flagged audits")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Internal server error occurred while fetching flagged audits.",
+                )
+
+            return FlaggedAuditsResponse(
+                success=True,
+                message="Succesfully retrieved the flagged audits",
+                flagged_audits=flagged_audits,
+            )
+        except HTTPException as e:
+            raise e
+        except Exception as e:
+            logger.error(f"Failed to get flagged audits for auditor, error: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Internal server error while getting flagged audits.",
+            )
+            
+            

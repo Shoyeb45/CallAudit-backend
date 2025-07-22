@@ -210,6 +210,13 @@ class ManagerService:
 
             flagged_audits = self.repo.get_all_latest_flagged_audit(manager.id)
 
+            if flagged_audits == []:
+                return FlaggedAuditsResponse(
+                    success=True,
+                    message="Succesfully retrieved the flagged audits",
+                    flagged_audits=flagged_audits,
+                )
+                
             if not flagged_audits:
                 logger.error("Failed to get flagged audits")
                 raise HTTPException(

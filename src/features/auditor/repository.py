@@ -5,10 +5,10 @@ from sqlalchemy.orm import Session
 from sqlalchemy import Date, cast, func
 from typing import Any, Dict, List, Optional
 from features.auditor.schemas import CallResponse, CallStats, LatestCallResponse
-from features.manager.schemas import OneDayAuditData
-from models import AuditReport, Auditor, Call, CallAnalysis
+from features.manager.schemas import AuditFlaggedResponse, OneDayAuditData
+from models import AuditReport, Auditor, Call, CallAnalysis, Counsellor
 from sqlalchemy.exc import SQLAlchemyError
-
+from sqlalchemy import and_, desc
 logger = logging.getLogger(__name__)
 
 
@@ -243,3 +243,67 @@ class AuditorRepository:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Internal server error occurred while approving lead.",
             )
+
+    def get_all_latest_flagged_audit(
+        self, auditor_id: str
+    ) -> List[AuditFlaggedResponse] | None:
+        try:
+            logger.info(
+                f"Getting all latest flagged audits for auditor with id: {auditor_id}"
+            )
+            flagged_calls_query = (
+                self.db.query(
+                    AuditReport.id,
+                    AuditReport.call_id,
+                    AuditReport.auditor_id,
+                    Auditor.name.label("auditor_name"),
+                    AuditReport.score,
+                    AuditReport.comments,
+                    AuditReport.flag_reason,
+                    AuditReport.updated_at,
+                    AuditReport.created_at,
+                    Call.client_number,
+                    Counsellor.name.label("counsellor_name"),
+                )
+                .join(Auditor, AuditReport.auditor_id == Auditor.id)
+                .join(Call, AuditReport.call_id == Call.id)
+                .join(Counsellor, Call.counsellor_id == Counsellor.id)
+                .filter(
+                    and_(
+                        AuditReport.auditor_id == auditor_id,
+                        AuditReport.is_flagged.is_(True),
+                    )
+                )
+                .order_by(desc(AuditReport.updated_at))
+            )
+
+            results = flagged_calls_query.all()
+            
+            final_response: List[AuditFlaggedResponse] = []
+
+            if results:
+                for result in results:
+                    # print(result.updated_at)
+                    final_response.append(
+                        AuditFlaggedResponse(
+                            id=result.id,
+                            call_id=result.call_id,
+                            auditor_id=result.auditor_id,
+                            auditor_name=result.auditor_name,
+                            score=int(result.score) if result.score is not None else 0,
+                            comments=result.comments,
+                            flag_reason=(
+                                result.flag_reason if result.flag_reason is not None else ""
+                            ),
+                            updated_at=result.updated_at,
+                            created_at=result.created_at,
+                            client_number=result.client_number,
+                            counsellor_name=result.counsellor_name,
+                        )
+                    )
+            return final_response
+        except Exception as e:
+            logger.error(
+                f"Failed to retrieve all latest flagged audit from database, error: {str(e)}"
+            )
+            return None
