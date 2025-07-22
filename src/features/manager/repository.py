@@ -325,20 +325,44 @@ class ManagerRepository:
             )
             return False
 
-    def delete_auditor(self, auditor_id) -> bool: 
-        try:    
+    def deactivate_auditor(self, auditor_id: str) -> bool:
+        try:
             auditor = self.db.query(Auditor).filter_by(id=auditor_id).first()
+            
             if not auditor:
                 logger.warning(f"Auditor with ID {auditor_id} does not exist.")
                 return False
+            
+            logger.debug(f"Deactivating auditor: {auditor.id} (current status: {auditor.is_active})")
 
-            self.db.delete(auditor)
+            auditor.is_active = False
+            auditor.updated_at = datetime.utcnow()
+            
             self.db.commit()
-
-            logger.info(f"Successfully deleted auditor with ID {auditor_id}")
+            self.db.refresh(auditor)
+            logger.info(f"Successfully deactivated auditor with ID {auditor_id}")
             return True
         except Exception as e:
-            logger.error(
-                f"Failed to delete auditor from database, error: {str(e)}"
-            )
+            logger.error(f"Failed to deactivate auditor, error: {str(e)}")
+            return False
+
+    def deactivate_counsellor(self, counsellor_id: str) -> bool:
+        try:
+            counsellor = self.db.query(Counsellor).filter_by(id=counsellor_id).first()
+            
+            if not counsellor:
+                logger.warning(f"Counsellor with ID {counsellor_id} does not exist.")
+                return False
+
+            logger.debug(f"Deactivating counsellor: {counsellor.id} (current status: {counsellor.is_active})")
+            counsellor.updated_at = datetime.utcnow()
+            counsellor.is_active = False
+            
+            self.db.commit()
+            self.db.refresh(counsellor)
+
+            logger.info(f"Successfully deactivated counsellor with ID {counsellor_id}")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to deactivate counsellor from database, error: {str(e)}")
             return False

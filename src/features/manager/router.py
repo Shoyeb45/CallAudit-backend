@@ -69,7 +69,11 @@ def get_counsellor_analysis(
     return service.get_counsellor_analysis(manager)
 
 
-@router.post("/add", description="API endpoint to add new auditor or new counsellor", response_model=NewUserCreatedSchema)
+@router.post(
+    "/add",
+    description="API endpoint to add new auditor or new counsellor",
+    response_model=NewUserCreatedSchema,
+)
 def add_auditor_or_counsellor(
     role: str = Form(...),
     name: str = Form(...),
@@ -82,10 +86,16 @@ def add_auditor_or_counsellor(
     return service.add_new_user(role, name, email, phone, auditor_id, manager.id)
 
 
-@router.delete("/delete-auditor", description="API endpoint to add new auditor", response_model=BaseResponse)
-def delete_auditor(
-    auditor_id: str = Form(...),
+@router.post(
+    "/deactivate",
+    description="API endpoint to add new auditor",
+    response_model=BaseResponse,
+)
+def delete_auditor_or_counsellor(
+    role: str = Form(...),
+    counsellor_id: Optional[str] = Form(None),
+    auditor_id: Optional[str] = Form(None),
     manager: Manager = Depends(get_current_user),
-    service: ManagerService = Depends(get_manager_service)
+    service: ManagerService = Depends(get_manager_service),
 ):
-    return service.delete_auditor(auditor_id)
+    return service.deactivate_auditor_or_counsellor(counsellor_id, auditor_id, role)

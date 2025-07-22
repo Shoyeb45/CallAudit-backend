@@ -39,6 +39,13 @@ class AuditorService:
                     status_code=status.HTTP_404_NOT_FOUND,
                 )
 
+            if not auditor.is_active:
+                logger.error("Auditor is not active")
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Forbidden request, auditor is not active"
+                )
+                
             # compare password
             if auditor.password != password:
                 logger.error("Password not matched")
