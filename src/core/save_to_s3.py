@@ -69,7 +69,7 @@ class S3Saver:
                 file_obj,
                 self.aws_settings.aws_s3_bucket_name,
                 s3_key,
-                ExtraArgs={"ContentType": content_type},
+                ExtraArgs={ "ContentType": content_type },
             )
 
             # Get file URL

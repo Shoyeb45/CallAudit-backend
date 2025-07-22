@@ -373,7 +373,7 @@ class ManagerService:
 
             return BaseResponse(
                 success=True,
-                message=f"Succesfull deactivated auditor with id: {auditor_id}",
+                message=f"Succesfully deactivated auditor with id: {auditor_id}",
             )
         except HTTPException as e:
             raise e
@@ -382,6 +382,36 @@ class ManagerService:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Internal server error occurred while deactivating auditor",
+            )
+            
+    def activate_auditor(self, auditor_id) -> BaseResponse:
+        try:
+            if not auditor_id:
+                logger.error("Auditor id not found")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Auditor id not found",
+                )
+
+            is_auditor_deleted = self.repo.activate_auditor(auditor_id)
+            if not is_auditor_deleted:
+                logger.error("Failed to activate auditor")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Internal server error occurred while activating auditor",
+                )
+
+            return BaseResponse(
+                success=True,
+                message=f"Succesfully activated auditor with id: {auditor_id}",
+            )
+        except HTTPException as e:
+            raise e
+        except Exception as e:
+            logger.error(f"Failed toeactivate auditor, error: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Internal server error occurred while activating auditor",
             )
 
     def deactivate_counsellor(self, counsellor_id: str) -> BaseResponse:
@@ -415,6 +445,38 @@ class ManagerService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Internal server error occurred while deactivating counsellor",
             )
+            
+    def activate_counsellor(self, counsellor_id: str) -> BaseResponse:
+        try:
+            if not counsellor_id:
+                logger.error("Counsellor id not found")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Counsellor id not found",
+                )
+
+            is_counsellor_deleted = self.repo.activate_counsellor(counsellor_id)
+
+            if not is_counsellor_deleted:
+                logger.error("Failed to activate counsellor")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Internal server error occurred while activate counsellor",
+                )
+
+            return BaseResponse(
+                success=True,
+                message=f"Succesfully activated counsellor with id: {counsellor_id}",
+            )
+
+        except HTTPException as e:
+            raise e
+        except Exception as e:
+            logger.error(f"Failed to activate counsellor, error: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Internal server error occurred while activating counsellor",
+            )
 
     def deactivate_auditor_or_counsellor(
         self, counsellor_id, auditor_id, role
@@ -436,4 +498,50 @@ class ManagerService:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Internal server error occurred while deactivating auditor or counsellor",
+            )
+            
+    def activate_auditor_or_counsellor(
+        self, counsellor_id, auditor_id, role
+    ) -> BaseResponse:
+        try:
+            if role == "auditor":
+                return self.activate_auditor(auditor_id)
+            elif role == "counsellor":
+                return self.activate_counsellor(counsellor_id)
+            
+            logger.error("No valid role")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No valid role to activate",
+            )
+        except HTTPException as e:
+            raise e
+        except Exception as e:
+            logger.error(f"Failed to activate auditor or counsellor, error: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Internal server error occurred while activating auditor or counsellor",
+            )
+
+    def unflag_flagged_audit(self, audit_id: str) -> BaseResponse:
+        try:
+            is_unflagged = self.repo.unflag_audit(audit_id)
+            
+            if not is_unflagged:
+                logger.error("Failed to unflag audit")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Internal server error occurred while unflagging audit"
+                )
+            return BaseResponse(
+                success=True,
+                message=f"Succesfully unflagged given audit with id: {audit_id}"
+            )
+        except HTTPException as e:
+            raise e
+        except Exception as e:
+            logger.error(f"Failed to unflag audit, error: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Internal server error occurred while unflagging audit",
             )
