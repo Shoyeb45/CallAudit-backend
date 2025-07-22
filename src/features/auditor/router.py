@@ -66,3 +66,15 @@ def approve_lead(
         },
         auditor,
     )
+
+@router.get(
+    "/unflag",
+    description="API endpoint to unflag any flagged audit report",
+    response_model=BaseResponse
+)
+def unflag_flagged_audit(
+    audit_id: str,
+    auditor: Auditor = Depends(get_current_user),
+    service: AuditorService = Depends(get_auditor_service)
+):
+    return service.unflag_flagged_audit(auditor, audit_id)

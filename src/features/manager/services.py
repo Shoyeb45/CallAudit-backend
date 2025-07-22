@@ -523,8 +523,15 @@ class ManagerService:
                 detail="Internal server error occurred while activating auditor or counsellor",
             )
 
-    def unflag_flagged_audit(self, audit_id: str) -> BaseResponse:
+    def unflag_flagged_audit(self, manager: Manager, audit_id: str) -> BaseResponse:
         try:
+            if not isinstance(manager, Manager):
+                logger.error("User is not manager")
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Unauthorised access, user is not manager."
+                )
+                
             is_unflagged = self.repo.unflag_audit(audit_id)
             
             if not is_unflagged:

@@ -15,6 +15,7 @@ from features.auditor.schemas import (
     LoginSchema,
     User,
 )
+from features.manager.dependency import get_manager_repository
 from models import Auditor
 
 
@@ -187,4 +188,37 @@ class AuditorService:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Internal server error occurred while approving leads",
+            )
+
+
+    def unflag_flagged_audit(self, auditor: Auditor,audit_id: str) -> BaseResponse:
+        try:
+            if not isinstance(auditor, Auditor):
+                logger.error("User is not auditor")
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Unauthorised access, user is not auditor."
+                )
+                
+            repo_manager = get_manager_repository(self.repo.db)
+            
+            is_unflagged = repo_manager.unflag_audit(audit_id)
+            
+            if not is_unflagged:
+                logger.error("Failed to unflag audit")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Internal server error occurred while unflagging audit"
+                )
+            return BaseResponse(
+                success=True,
+                message=f"Succesfully unflagged given audit with id: {audit_id}"
+            )
+        except HTTPException as e:
+            raise e
+        except Exception as e:
+            logger.error(f"Failed to unflag audit, error: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Internal server error occurred while unflagging audit",
             )

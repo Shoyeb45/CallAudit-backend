@@ -125,4 +125,4 @@ def unflag_flagged_audit(
     manager: Manager = Depends(get_current_user),
     service: ManagerService = Depends(get_manager_service)
 ):
-    return service.unflag_flagged_audit(audit_id)
+    return service.unflag_flagged_audit(manager, audit_id)
