@@ -40,6 +40,7 @@ class ManagerAnalyticsResponse(BaseResponse):
 class AuditorResponse(BaseModel):
     id: str
     name: str
+    is_active: bool
     total_assigned_leads: int
     total_audited_leads: int
 
@@ -54,6 +55,7 @@ class AuditorAnalyticsResponse(BaseResponse):
 class CounsellorResponse(BaseModel):
     id: str
     name: str
+    is_active: bool
     email: str
     total_calls: int
 
@@ -67,3 +69,7 @@ class CounsellorAnalysisResponse(BaseResponse):
 # FlaggedAuditsResponse
 class FlaggedAuditsResponse(BaseResponse):
     flagged_audits: List[AuditFlaggedResponse]
+
+
+class NewUserCreatedSchema(BaseResponse):
+    password: str

@@ -11,6 +11,7 @@ dependencies = [
     "dotenv>=0.9.9",
     "elevenlabs>=2.7.1",
     "fastapi>=0.116.1",
+    "openai>=1.97.0",
     "psycopg2>=2.9.10",
     "pydantic>=2.11.7",
     "pydantic-settings>=2.10.1",

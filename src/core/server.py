@@ -3,6 +3,7 @@ import logging
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from config import get_app_settings
+from core.save_to_s3 import S3Saver
 from database import create_tables
 
 logger = logging.getLogger(__name__)
@@ -22,6 +23,8 @@ def create_server():
             """
             # Startup
             logger.info("Starting up FastAPI application...")
+            app.state.s3_saver = S3Saver()  # initialize once here
+            logger.info("S3 client initialized and stored in app.state")
             # create_tables()
             logger.info("Database tables created/verified")
 

@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class AuthService:
     def __init__(self, db: Session):
-        self.db = db
+        self.repo = db
         self.manager_service = get_manager_service(get_manager_repository(db))
         self.auditor_service = get_auditor_service(get_auditor_repository(db))
 

@@ -1,6 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 from features.manager.schemas import OneDayAuditData
 
@@ -37,7 +37,7 @@ class CallResponse(BaseModel):
     ai_confidence: float
     recording_url: str
     summary: str
-    sentiment_score: int
+    sentiment_score: Optional[int] = None
     anomalies: str
 
 

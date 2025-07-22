@@ -16,3 +16,5 @@ wheels/
 Resources
 
 populate_dummy_data.py
+
+*.ipynb

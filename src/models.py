@@ -48,13 +48,21 @@ class Auditor(Base):
     email = Column(String, nullable=False, unique=True)
     phone = Column(String, nullable=True)
     password = Column(String, nullable=False)
+    is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
     # Relationships
     manager = relationship("Manager", back_populates="auditors")
-    counsellors = relationship("Counsellor", back_populates="auditor")
-    calls = relationship("Call", back_populates="auditor")
+    counsellors = relationship(
+        "Counsellor", back_populates="auditor", cascade="all, delete-orphan"
+    )
+    calls = relationship(
+        "Call",
+        back_populates="auditor",
+        cascade="all, delete-orphan",  # ensures ORM-level cascade
+        passive_deletes=True           # defers to database to handle deletes
+    )
     audit_reports = relationship("AuditReport", back_populates="auditor")
     leads = relationship("Lead", back_populates="auditor")
 
@@ -63,27 +71,42 @@ class Counsellor(Base):
     __tablename__ = "counsellors"
 
     id = Column(String, primary_key=True, default=generate_uuid)
-    auditor_id = Column(String, ForeignKey("auditors.id"), nullable=False)
+    auditor_id = Column(
+        String, ForeignKey("auditors.id", ondelete="CASCADE"), nullable=False
+    )
     manager_id = Column(String, ForeignKey("managers.id"), nullable=False)
     name = Column(String, nullable=False)
     email = Column(String, nullable=False, unique=True)
     phone = Column(String, nullable=True)
+    is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
     # Relationships
     auditor = relationship("Auditor", back_populates="counsellors")
     manager = relationship("Manager", back_populates="counsellors")
-    calls = relationship("Call", back_populates="counsellor")
-    leads = relationship("Lead", back_populates="counsellor")
+    calls = relationship(
+        "Call",
+        back_populates="counsellor",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    leads = relationship(
+        "Lead",
+        back_populates="counsellor",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
 
 class Call(Base):
     __tablename__ = "calls"
 
     id = Column(String, primary_key=True, default=generate_uuid)
-    counsellor_id = Column(String, ForeignKey("counsellors.id"), nullable=False)
-    auditor_id = Column(String, ForeignKey("auditors.id"), nullable=False)
+    counsellor_id = Column(
+        String, ForeignKey("counsellors.id", ondelete="CASCADE"), nullable=False
+    )
+    auditor_id = Column(String, ForeignKey("auditors.id", ondelete="CASCADE"), nullable=False)
     manager_id = Column(String, ForeignKey("managers.id"), nullable=False)
     call_start = Column(DateTime, nullable=False)
     call_end = Column(DateTime)
@@ -148,7 +171,9 @@ class Lead(Base):
     __tablename__ = "leads"
 
     id = Column(String, primary_key=True, default=generate_uuid)
-    counsellor_id = Column(String, ForeignKey("counsellors.id"), nullable=False)
+    counsellor_id = Column(
+        String, ForeignKey("counsellors.id", ondelete="CASCADE"), nullable=False
+    )
     auditor_id = Column(String, ForeignKey("auditors.id"), nullable=False)
     manager_id = Column(String, ForeignKey("managers.id"), nullable=False)
     client_name = Column(String, nullable=True)
@@ -159,6 +184,7 @@ class Lead(Base):
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
     # Relationships
+
     counsellor = relationship("Counsellor", back_populates="leads")
     auditor = relationship("Auditor", back_populates="leads")
     manager = relationship("Manager", back_populates="leads")
