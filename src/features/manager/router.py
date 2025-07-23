@@ -100,6 +100,7 @@ def delete_auditor_or_counsellor(
 ):
     return service.deactivate_auditor_or_counsellor(counsellor_id, auditor_id, role)
 
+
 @router.post(
     "/activate",
     description="API endpoint to add new auditor",
@@ -118,11 +119,11 @@ def delete_auditor_or_counsellor(
 @router.get(
     "/unflag",
     description="API endpoint to unflag any flagged audit report",
-    response_model=BaseResponse
+    response_model=BaseResponse,
 )
 def unflag_flagged_audit(
     audit_id: str,
     manager: Manager = Depends(get_current_user),
-    service: ManagerService = Depends(get_manager_service)
+    service: ManagerService = Depends(get_manager_service),
 ):
     return service.unflag_flagged_audit(manager, audit_id)

@@ -216,7 +216,7 @@ class ManagerService:
                     message="Succesfully retrieved the flagged audits",
                     flagged_audits=flagged_audits,
                 )
-                
+
             if not flagged_audits:
                 logger.error("Failed to get flagged audits")
                 raise HTTPException(
@@ -390,7 +390,7 @@ class ManagerService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Internal server error occurred while deactivating auditor",
             )
-            
+
     def activate_auditor(self, auditor_id) -> BaseResponse:
         try:
             if not auditor_id:
@@ -452,7 +452,7 @@ class ManagerService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Internal server error occurred while deactivating counsellor",
             )
-            
+
     def activate_counsellor(self, counsellor_id: str) -> BaseResponse:
         try:
             if not counsellor_id:
@@ -506,7 +506,7 @@ class ManagerService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Internal server error occurred while deactivating auditor or counsellor",
             )
-            
+
     def activate_auditor_or_counsellor(
         self, counsellor_id, auditor_id, role
     ) -> BaseResponse:
@@ -515,7 +515,7 @@ class ManagerService:
                 return self.activate_auditor(auditor_id)
             elif role == "counsellor":
                 return self.activate_counsellor(counsellor_id)
-            
+
             logger.error("No valid role")
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -536,20 +536,20 @@ class ManagerService:
                 logger.error("User is not manager")
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Unauthorised access, user is not manager."
+                    detail="Unauthorised access, user is not manager.",
                 )
-                
+
             is_unflagged = self.repo.unflag_audit(audit_id)
-            
+
             if not is_unflagged:
                 logger.error("Failed to unflag audit")
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail="Internal server error occurred while unflagging audit"
+                    detail="Internal server error occurred while unflagging audit",
                 )
             return BaseResponse(
                 success=True,
-                message=f"Succesfully unflagged given audit with id: {audit_id}"
+                message=f"Succesfully unflagged given audit with id: {audit_id}",
             )
         except HTTPException as e:
             raise e

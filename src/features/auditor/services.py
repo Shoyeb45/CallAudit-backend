@@ -45,9 +45,9 @@ class AuditorService:
                 logger.error("Auditor is not active")
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
-                    detail="Forbidden request, auditor is not active"
+                    detail="Forbidden request, auditor is not active",
                 )
-                
+
             # compare password
             if auditor.password != password:
                 logger.error("Password not matched")
@@ -191,29 +191,28 @@ class AuditorService:
                 detail=f"Internal server error occurred while approving leads",
             )
 
-
-    def unflag_flagged_audit(self, auditor: Auditor,audit_id: str) -> BaseResponse:
+    def unflag_flagged_audit(self, auditor: Auditor, audit_id: str) -> BaseResponse:
         try:
             if not isinstance(auditor, Auditor):
                 logger.error("User is not auditor")
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Unauthorised access, user is not auditor."
+                    detail="Unauthorised access, user is not auditor.",
                 )
-                
+
             repo_manager = get_manager_repository(self.repo.db)
-            
+
             is_unflagged = repo_manager.unflag_audit(audit_id)
-            
+
             if not is_unflagged:
                 logger.error("Failed to unflag audit")
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail="Internal server error occurred while unflagging audit"
+                    detail="Internal server error occurred while unflagging audit",
                 )
             return BaseResponse(
                 success=True,
-                message=f"Succesfully unflagged given audit with id: {audit_id}"
+                message=f"Succesfully unflagged given audit with id: {audit_id}",
             )
         except HTTPException as e:
             raise e
@@ -223,17 +222,19 @@ class AuditorService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Internal server error occurred while unflagging audit",
             )
-            
+
     def get_flagged_audits(self, auditor: Auditor) -> FlaggedAuditsResponse:
         try:
             if not isinstance(auditor, Auditor):
                 logger.error("User is not auditor")
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Unauthorised access, user is not auditor."
+                    detail="Unauthorised access, user is not auditor.",
                 )
-                
-            logger.info(f"API endpoint called for getting flagged audits for auditor with id: {auditor.id}")
+
+            logger.info(
+                f"API endpoint called for getting flagged audits for auditor with id: {auditor.id}"
+            )
 
             flagged_audits = self.repo.get_all_latest_flagged_audit(auditor.id)
 
@@ -243,7 +244,7 @@ class AuditorService:
                     message="Succesfully retrieved the flagged audits",
                     flagged_audits=flagged_audits,
                 )
-                
+
             if not flagged_audits:
                 logger.error("Failed to get flagged audits")
                 raise HTTPException(
@@ -264,5 +265,3 @@ class AuditorService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Internal server error while getting flagged audits.",
             )
-            
-            

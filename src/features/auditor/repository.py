@@ -9,6 +9,7 @@ from features.manager.schemas import AuditFlaggedResponse, OneDayAuditData
 from models import AuditReport, Auditor, Call, CallAnalysis, Counsellor
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import and_, desc
+
 logger = logging.getLogger(__name__)
 
 
@@ -278,7 +279,7 @@ class AuditorRepository:
             )
 
             results = flagged_calls_query.all()
-            
+
             final_response: List[AuditFlaggedResponse] = []
 
             if results:
@@ -293,7 +294,9 @@ class AuditorRepository:
                             score=int(result.score) if result.score is not None else 0,
                             comments=result.comments,
                             flag_reason=(
-                                result.flag_reason if result.flag_reason is not None else ""
+                                result.flag_reason
+                                if result.flag_reason is not None
+                                else ""
                             ),
                             updated_at=result.updated_at,
                             created_at=result.created_at,
