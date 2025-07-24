@@ -61,7 +61,7 @@ class Auditor(Base):
         "Call",
         back_populates="auditor",
         cascade="all, delete-orphan",  # ensures ORM-level cascade
-        passive_deletes=True           # defers to database to handle deletes
+        passive_deletes=True,  # defers to database to handle deletes
     )
     audit_reports = relationship("AuditReport", back_populates="auditor")
     leads = relationship("Lead", back_populates="auditor")
@@ -106,7 +106,9 @@ class Call(Base):
     counsellor_id = Column(
         String, ForeignKey("counsellors.id", ondelete="CASCADE"), nullable=False
     )
-    auditor_id = Column(String, ForeignKey("auditors.id", ondelete="CASCADE"), nullable=False)
+    auditor_id = Column(
+        String, ForeignKey("auditors.id", ondelete="CASCADE"), nullable=False
+    )
     manager_id = Column(String, ForeignKey("managers.id"), nullable=False)
     call_start = Column(DateTime, nullable=False)
     call_end = Column(DateTime)

@@ -1,6 +1,7 @@
 import logging
 import random
 import string
+from fastapi import HTTPException, status
 from sqlalchemy import and_, desc, select, func, cast, Date
 from sqlalchemy.orm import Session
 from typing import Optional
@@ -217,7 +218,6 @@ class ManagerRepository:
                     func.count(func.distinct(AuditReport.id)).label(
                         "total_audited_leads"
                     ),
-                    
                 )
                 .outerjoin(Lead, Lead.auditor_id == Auditor.id)
                 .outerjoin(AuditReport, AuditReport.auditor_id == Auditor.id)
@@ -333,16 +333,18 @@ class ManagerRepository:
     def deactivate_auditor(self, auditor_id: str) -> bool:
         try:
             auditor = self.db.query(Auditor).filter_by(id=auditor_id).first()
-            
+
             if not auditor:
                 logger.warning(f"Auditor with ID {auditor_id} does not exist.")
                 return False
-            
-            logger.debug(f"Deactivating auditor: {auditor.id} (current status: {auditor.is_active})")
+
+            logger.debug(
+                f"Deactivating auditor: {auditor.id} (current status: {auditor.is_active})"
+            )
 
             auditor.is_active = False
             auditor.updated_at = datetime.utcnow()
-            
+
             self.db.commit()
             self.db.refresh(auditor)
             logger.info(f"Successfully deactivated auditor with ID {auditor_id}")
@@ -354,20 +356,108 @@ class ManagerRepository:
     def deactivate_counsellor(self, counsellor_id: str) -> bool:
         try:
             counsellor = self.db.query(Counsellor).filter_by(id=counsellor_id).first()
-            
+
             if not counsellor:
                 logger.warning(f"Counsellor with ID {counsellor_id} does not exist.")
                 return False
 
-            logger.debug(f"Deactivating counsellor: {counsellor.id} (current status: {counsellor.is_active})")
+            logger.debug(
+                f"Deactivating counsellor: {counsellor.id} (current status: {counsellor.is_active})"
+            )
             counsellor.updated_at = datetime.utcnow()
             counsellor.is_active = False
-            
+
             self.db.commit()
             self.db.refresh(counsellor)
 
             logger.info(f"Successfully deactivated counsellor with ID {counsellor_id}")
             return True
         except Exception as e:
-            logger.error(f"Failed to deactivate counsellor from database, error: {str(e)}")
+            logger.error(
+                f"Failed to deactivate counsellor from database, error: {str(e)}"
+            )
+            return False
+
+    def activate_auditor(self, auditor_id: str) -> bool:
+        try:
+            auditor = self.db.query(Auditor).filter_by(id=auditor_id).first()
+
+            if not auditor:
+                logger.warning(f"Auditor with ID {auditor_id} does not exist.")
+                return False
+
+            logger.debug(
+                f"Activating auditor: {auditor.id} (current status: {auditor.is_active})"
+            )
+
+            auditor.is_active = True
+            auditor.updated_at = datetime.utcnow()
+
+            self.db.commit()
+            self.db.refresh(auditor)
+            logger.info(f"Successfully activated auditor with ID {auditor_id}")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to activate auditor, error: {str(e)}")
+            return False
+
+    def activate_counsellor(self, counsellor_id: str) -> bool:
+        try:
+            counsellor = self.db.query(Counsellor).filter_by(id=counsellor_id).first()
+
+            if not counsellor:
+                logger.warning(f"Counsellor with ID {counsellor_id} does not exist.")
+                return False
+
+            logger.debug(
+                f"Activating counsellor: {counsellor.id} (current status: {counsellor.is_active})"
+            )
+            counsellor.updated_at = datetime.utcnow()
+            counsellor.is_active = True
+
+            self.db.commit()
+            self.db.refresh(counsellor)
+
+            logger.info(f"Successfully activated counsellor with ID {counsellor_id}")
+            return True
+        except Exception as e:
+            logger.error(
+                f"Failed to activate counsellor from database, error: {str(e)}"
+            )
+            return False
+
+    def unflag_audit(self, audit_id) -> bool:
+        try:
+            report = (
+                self.db.query(AuditReport).filter(AuditReport.id == audit_id).first()
+            )
+
+            if not report:
+                logger.error("No audit report found for given call id")
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="No audit report found with given audit id",
+                )
+
+            report.is_flagged = False
+            report.flag_reason = "Call unflagged"
+            report.updated_at = datetime.utcnow()
+
+            # Sync with Call
+            call = self.db.query(Call).filter(Call.id == report.call_id).first()
+            if not call:
+                logger.error("No call found with given audit id")
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="No call found  with given audit id",
+                )
+
+            call.is_flagged = False
+            call.updated_at = datetime.utcnow()
+
+            self.db.commit()
+            logger.info(f"Succesfully unflagged audit with audit id: {audit_id}")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to unflag audit, error: {str(e)}")
             return False

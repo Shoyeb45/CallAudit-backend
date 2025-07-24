@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from fastapi import Request, Response, HTTPException, status
-from features.auditor.schemas import LoginSchema
+from features.auditor.schemas import BaseResponse, LoginSchema
 from features.manager.dependency import get_manager_service, get_manager_repository
 from features.auditor.dependency import get_auditor_service, get_auditor_repository
 import logging
@@ -37,7 +37,7 @@ class AuthService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-    def logout(self, request: Request, response: Response) -> LoginSchema:
+    def logout(self, request: Request, response: Response) -> BaseResponse:
         try:
             token = request.cookies.get("token")
 
@@ -48,7 +48,7 @@ class AuthService:
                 )
 
             response.delete_cookie("token")
-            return LoginSchema(success=True, message="Succesfully logged out")
+            return BaseResponse(success=True, message="Succesfully logged out", )
         except HTTPException as e:
             raise e
         except Exception as e:

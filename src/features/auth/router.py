@@ -2,7 +2,7 @@ from fastapi import APIRouter, Form, HTTPException, Request, Response, Depends, 
 import logging
 
 from dependecy import get_current_user
-from features.auditor.schemas import LoginSchema, User
+from features.auditor.schemas import BaseResponse, LoginSchema, User
 from features.auth.dependency import get_auth_service
 from features.auth.services import AuthService
 from models import Auditor, Manager
@@ -30,7 +30,7 @@ def login(
 @router.get(
     "/logout",
     description="API endpoint to log out the user",
-    response_model=LoginSchema,
+    response_model=BaseResponse,
 )
 def logout(
     request: Request,
