@@ -575,3 +575,8 @@ call_stats
 2025-07-18 14:51:39 - features.manager.repository - INFO - Getting all flagged calls for manager with id: 2ace8eeb-9eba-45f5-9c59-bc2f3e27ad27
 2025-07-18 14:51:39 - features.manager.repository - INFO - Getting all latest flagged audits for manager with id: 2ace8eeb-9eba-45f5-9c59-bc2f3e27ad27
 2025-07-18 14:51:39 - features.manager.repository - INFO - Getting last 7 days audited data
+2025-07-24 17:44:46 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-07-24 17:44:46 - core.server - INFO - Starting up FastAPI application...
+2025-07-24 17:44:46 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-07-24 17:44:46 - core.server - INFO - S3 client initialized and stored in app.state
+2025-07-24 17:59:16 - core.server - INFO - Shutting down FastAPI application...

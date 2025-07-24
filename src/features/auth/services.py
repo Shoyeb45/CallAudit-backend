@@ -48,7 +48,10 @@ class AuthService:
                 )
 
             response.delete_cookie("token")
-            return BaseResponse(success=True, message="Succesfully logged out", )
+            return BaseResponse(
+                success=True,
+                message="Succesfully logged out",
+            )
         except HTTPException as e:
             raise e
         except Exception as e:
