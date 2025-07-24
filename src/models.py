@@ -17,10 +17,21 @@ Base = declarative_base()
 
 
 def generate_uuid():
+    """Generate a random UUID string for primary key values.
+
+    Returns:
+        str: Random UUID string
+    """
     return str(uuid.uuid4())
 
 
 class Manager(Base):
+    """Manager model representing a company administrator.
+
+    Managers oversee auditors, counsellors, and all call-related activities
+    within the system.
+    """
+
     __tablename__ = "managers"
 
     id = Column(String, primary_key=True, default=generate_uuid)
@@ -40,6 +51,12 @@ class Manager(Base):
 
 
 class Auditor(Base):
+    """Auditor model representing a call quality auditor.
+
+    Auditors are responsible for reviewing calls, generating audit reports,
+    and managing counsellors under their supervision.
+    """
+
     __tablename__ = "auditors"
 
     id = Column(String, primary_key=True, default=generate_uuid)
@@ -68,6 +85,12 @@ class Auditor(Base):
 
 
 class Counsellor(Base):
+    """Counsellor model representing a call handler.
+
+    Counsellors make calls to clients and are supervised by auditors.
+    They are assigned leads and their calls are subject to quality audits.
+    """
+
     __tablename__ = "counsellors"
 
     id = Column(String, primary_key=True, default=generate_uuid)
@@ -100,6 +123,12 @@ class Counsellor(Base):
 
 
 class Call(Base):
+    """Call model representing a client interaction.
+
+    Stores information about phone calls made by counsellors, including
+    metadata, recordings, and audit status.
+    """
+
     __tablename__ = "calls"
 
     id = Column(String, primary_key=True, default=generate_uuid)
@@ -132,6 +161,12 @@ class Call(Base):
 
 
 class CallAnalysis(Base):
+    """CallAnalysis model representing AI-generated call insights.
+
+    Contains AI-powered analysis of calls including sentiment scores,
+    transcripts, summaries, and anomaly detection.
+    """
+
     __tablename__ = "call_analysis"
 
     id = Column(String, primary_key=True, default=generate_uuid)
@@ -150,6 +185,12 @@ class CallAnalysis(Base):
 
 
 class AuditReport(Base):
+    """AuditReport model representing call quality assessment.
+
+    Contains detailed audit information for calls, including scores,
+    comments, and flagging status from auditors.
+    """
+
     __tablename__ = "audit_reports"
 
     id = Column(String, primary_key=True, default=generate_uuid)
@@ -170,6 +211,11 @@ class AuditReport(Base):
 
 
 class Lead(Base):
+    """Lead model representing a potential client contact.
+
+    Stores information about leads assigned to counsellors for follow-up calls.
+    """
+
     __tablename__ = "leads"
 
     id = Column(String, primary_key=True, default=generate_uuid)
@@ -186,7 +232,6 @@ class Lead(Base):
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
     # Relationships
-
     counsellor = relationship("Counsellor", back_populates="leads")
     auditor = relationship("Auditor", back_populates="leads")
     manager = relationship("Manager", back_populates="leads")

@@ -26,12 +26,18 @@ class DatabaseSettings(BaseSettings):
     pool_recycle: int = Field(default=3600, env="DB_POOL_RECYCLE")  # 1 hour
 
     class Config:
+        """Pydantic configuration for DatabaseSettings."""
+
         env_file = "../.env"
         case_sensitive = False
 
     @property
     def database_url(self) -> str:
-        """Generate database URL for SQLAlchemy."""
+        """Generate database URL for SQLAlchemy.
+
+        Returns:
+            str: Formatted database connection URL string
+        """
         return (
             f"postgresql+psycopg2://{self.postgres_user}:{self.postgres_password}"
             f"@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
@@ -47,11 +53,15 @@ class AppSettings(BaseSettings):
     api_v1_prefix: str = Field(default="/api/v1", env="API_V1_PREFIX")
 
     class Config:
+        """Pydantic configuration for AppSettings."""
+
         env_file = "../.env"
         case_sensitive = False
 
 
 class AWSSettings(BaseSettings):
+    """AWS configuration settings for cloud services."""
+
     aws_access_key_id: str = Field(default="your_access_key", env="AWS_ACCESS_KEY_ID")
     aws_secret_access_key: str = Field(
         default="your_secret_key", env="AWS_SECRET_ACCESS_KEY"
@@ -62,21 +72,29 @@ class AWSSettings(BaseSettings):
     )
 
     class Config:
+        """Pydantic configuration for AWSSettings."""
+
         env_file = "../.env"
         case_sensitive = False
 
 
 class JWT_SETTINGS(BaseSettings):
+    """JWT (JSON Web Token) security configuration settings."""
+
     jwt_secret: str = Field(default="jwt_secret", env="JWT_SECRET")
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 1440
 
     class Config:
+        """Pydantic configuration for JWT_SETTINGS."""
+
         env_file = "../.env"
         case_sensitive = False
 
 
 class LLMConfig(BaseSettings):
+    """Large Language Model configuration settings for AI services."""
+
     elevenlabs_api_key: str = Field(default="", env="ELEVENLABS_API_KEY")
     azure_openai_endpoint: str = Field(default="", env="AZURE_OPENAI_ENDPOINT")
     azure_openai_api_key: str = Field(default="", env="AZURE_OPENAI_API_KEY")
@@ -84,24 +102,39 @@ class LLMConfig(BaseSettings):
     azure_openai_api_version: str = Field(default="", env="AZURE_OPENAI_API_VERSION")
 
     class Config:
+        """Pydantic configuration for LLMConfig."""
+
         env_file = "../.env"
         case_sensitive = False
 
 
 @lru_cache()
 def get_jwt_settings() -> JWT_SETTINGS:
+    """Get cached JWT settings instance.
+
+    Returns:
+        JWT_SETTINGS: Cached instance of JWT configuration settings
+    """
     return JWT_SETTINGS()
 
 
 @lru_cache()
 def get_database_settings() -> DatabaseSettings:
-    """Get cached database settings instance."""
+    """Get cached database settings instance.
+
+    Returns:
+        DatabaseSettings: Cached instance of database configuration settings
+    """
     return DatabaseSettings()
 
 
 @lru_cache()
 def get_app_settings() -> AppSettings:
-    """Get cached application settings instance."""
+    """Get cached application settings instance.
+
+    Returns:
+        AppSettings: Cached instance of application configuration settings
+    """
     return AppSettings()
 
 
@@ -120,6 +153,6 @@ def get_llm_config() -> LLMConfig:
     """Get cached LLM config which contains all the configuration keys of openai and elevenlabs
 
     Returns:
-        LLMConfig
+        LLMConfig: instance with LLM configuration settings
     """
     return LLMConfig()
