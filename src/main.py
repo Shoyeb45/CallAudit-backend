@@ -19,7 +19,7 @@ from database import get_db
 from fastapi import HTTPException, Request, responses, Form, Depends
 import os
 
-# import routers
+# import routerssudo snap install astral-uv
 from features.auditor.router import router as auditor_router
 from features.manager.router import router as manager_router
 from features.counsellor.router import router as counsellor_router
