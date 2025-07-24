@@ -1,3 +1,11 @@
+"""
+Auditor Repository Module
+
+This module contains the `AuditorRepository` class, which provides an interface for
+interacting with the database for auditor-related operations. It encapsulates
+data access logic for auditors, their assigned calls, audit reports, and related statistics.
+"""
+
 from datetime import datetime, timedelta
 import logging
 from fastapi import HTTPException, status
@@ -14,23 +22,75 @@ logger = logging.getLogger(__name__)
 
 
 class AuditorRepository:
+    """
+    Repository class for handling database operations related to auditors.
+
+    This class provides methods to query and update data in the database
+    specifically for auditor functionalities such as fetching calls,
+    statistics, dashboard data, and managing audit reports.
+    """
+
     def __init__(self, db: Session):
+        """
+        Initializes the AuditorRepository with a database session.
+
+        Args:
+            db (Session): An active SQLAlchemy database session.
+        """
         self.db = db
 
-    # reading methods
+    # Reading methods
+
     def get_auditor(
         self, id: Optional[str] = None, email: Optional[str] = None
     ) -> Auditor | None:
+        """
+        Retrieves an auditor by ID or email.
+
+        Fetches a single auditor record from the database based on either
+        the provided ID or email address. If both are provided, ID takes precedence.
+
+        Args:
+            id (Optional[str]): The unique identifier of the auditor.
+            email (Optional[str]): The email address of the auditor.
+
+        Returns:
+
+            Auditor | None: The Auditor object if found, otherwise None.
+
+        Example:
+            >>> auditor = repo.get_auditor(email="auditor@example.com")
+            >>> if auditor:
+            ...     print(f"Auditor found: {auditor.name}")
+        """
         try:
             if id:
                 return self.db.query(Auditor).filter(Auditor.id == id).first()
-
             return self.db.query(Auditor).filter(Auditor.email == email).first()
         except Exception as e:
             logger.error(f"Failed to get auditor, error: {str(e)}")
             return None
 
     def get_calls(self, auditor_id: str) -> List[CallResponse] | None:
+        """
+        Retrieves all calls assigned to a specific auditor.
+
+        Fetches call details along with analysis data, ordered by AI confidence score.
+        This includes client information, call metadata, and AI-generated analysis.
+
+        Args:
+            auditor_id (str): The unique identifier of the auditor.
+
+        Returns:
+
+            List[CallResponse] | None: A list of CallResponse objects containing
+                                       call details, or None if an error occurs.
+
+        Example:
+            >>> calls = repo.get_calls("auditor-123")
+            >>> for call in calls:
+            ...     print(f"Call ID: {call.id}, Duration: {call.duration}")
+        """
         try:
             results = (
                 self.db.query(
@@ -49,9 +109,7 @@ class AuditorRepository:
                 .order_by(CallAnalysis.ai_confidence.asc())
                 .all()
             )
-
             final_response: List[CallResponse] = []
-
             for result in results:
                 final_response.append(
                     CallResponse(
@@ -66,13 +124,32 @@ class AuditorRepository:
                         anomalies=result.anomalies or "no_anomalies",
                     )
                 )
-
             return final_response
         except Exception as e:
             logger.error(f"Failed to fetch calls from database, error: {str(e)}")
             return None
 
     def get_call_stats(self, auditor_id: str) -> Dict[str, Any] | None:
+        """
+        Retrieves call statistics for a specific auditor.
+
+        Calculates the count of audited, unaudited, and flagged calls assigned
+        to the auditor using database aggregation functions.
+
+        Args:
+            auditor_id (str): The unique identifier of the auditor.
+
+        Returns:
+
+            Dict[str, Any] | None: A dictionary containing statistics with keys
+                                  'audited', 'unaudited', and 'flagged', or None
+                                  if an error occurs.
+
+        Example:
+            >>> stats = repo.get_call_stats("auditor-123")
+            >>> print(f"Audited calls: {stats['audited']}")
+            >>> print(f"Flagged calls: {stats['flagged']}")
+        """
         try:
             stats = (
                 self.db.query(
@@ -83,18 +160,36 @@ class AuditorRepository:
                 .filter(Call.auditor_id == auditor_id)
                 .one()
             )
-
             return {
                 "audited": stats.audited,
                 "unaudited": stats.unaudited,
                 "flagged": stats.flagged,
             }
-
         except Exception as e:
             logger.error(f"Failed to fetch stats from database, error: {str(e)}")
             return None
 
     def get_latest_calls(self, auditor_id: str) -> List[LatestCallResponse]:
+        """
+        Retrieves the most recently audited calls for an auditor.
+
+        Fetches basic information about the latest calls that have been marked
+        as audited, ordered by call start time in descending order.
+
+        Args:
+
+            auditor_id (str): The unique identifier of the auditor.
+
+        Returns:
+            List[LatestCallResponse]: A list of LatestCallResponse objects
+                                    containing recent call information, or None
+                                    if an error occurs.
+
+        Example:
+            >>> latest_calls = repo.get_latest_calls("auditor-123")
+            >>> for call in latest_calls:
+            ...     print(f"Recent call: {call.client_number} at {call.call_start}")
+        """
         try:
             results = (
                 self.db.query(
@@ -106,9 +201,7 @@ class AuditorRepository:
                 .order_by(Call.call_start.desc())
                 .all()
             )
-
             final_response: List[LatestCallResponse] = []
-
             for result in results:
                 final_response.append(
                     LatestCallResponse(
@@ -117,20 +210,38 @@ class AuditorRepository:
                         client_number=result.client_number,
                     )
                 )
-
             return final_response
         except Exception as e:
             logger.error(f"Failed to fetch latest calls from database, error: {str(e)}")
             return None
 
     def get_last_7_days_data(self, auditor_id: str) -> List[OneDayAuditData] | None:
+        """
+        Retrieves audit completion data for the last 7 days.
+
+        Generates a time series of daily audit counts for the past week,
+        including days with zero audits to ensure complete data representation.
+
+        Args:
+            auditor_id (str): The unique identifier of the auditor.
+
+        Returns:
+
+            List[OneDayAuditData] | None: A list of OneDayAuditData objects
+                                        representing daily audit counts, or None
+                                        if an error occurs.
+
+        Example:
+            >>> weekly_data = repo.get_last_7_days_data("auditor-123")
+            >>> for day_data in weekly_data:
+            ...     print(f"Date: {day_data.date}, Audits: {day_data.audited_calls}")
+        """
         try:
             # Step 1: Generate last 7 days
             today = datetime.utcnow().date()
             date_range = [
                 (today - timedelta(days=i)) for i in reversed(range(7))
             ]  # oldest to newest
-
             # Step 2: Fetch counts from DB
             raw_results = (
                 self.db.query(
@@ -144,10 +255,8 @@ class AuditorRepository:
                 .group_by(cast(AuditReport.created_at, Date))
                 .all()
             )
-
             # Step 3: Build dict from raw results
             audit_dict = {row.date: row.completed_audits for row in raw_results}
-
             # Step 4: Fill missing dates with 0
             final_result = [
                 OneDayAuditData(
@@ -155,25 +264,52 @@ class AuditorRepository:
                 )
                 for date in date_range
             ]
-
             return final_result
         except Exception as e:
             logger.error(f"Failed to fetch latest calls from database, error: {str(e)}")
             return None
 
     def approve_lead_and_update_db(self, data: Dict[str, Any], auditor_id: str):
+        """
+        Approves a lead and updates related database records.
+
+        Processes an audit approval by updating the Call record and either
+        creating or updating the corresponding AuditReport record. This includes
+        handling flagged status and associated comments/reasons.
+
+        Args:
+            data (Dict[str, Any]): A dictionary containing approval data including:
+                                 - 'call_id': The ID of the call being approved
+                                 - 'comments': Optional comments from the auditor
+                                 - 'is_flag': Optional flag status
+                                 - 'flag_reasons': Optional reasons for flagging
+            auditor_id (str): The ID of the auditor performing the approval.
+
+        Raises:
+
+            HTTPException:
+                - 400 Bad Request: If required 'call_id' is missing from data.
+                - 404 Not Found: If the specified call is not found for this auditor.
+                - 500 Internal Server Error: If a database error occurs during update.
+
+        Example:
+            >>> approval_data = {
+            ...     "call_id": "call-456",
+            ...     "comments": "Good call quality",
+            ...     "is_flag": False
+            ... }
+            >>> repo.approve_lead_and_update_db(approval_data, "auditor-123")
+        """
         try:
             call_id = data.get("call_id")
             comments = data.get("comments")
             is_flag = data.get("is_flag")
             flag_reasons = data.get("flag_reasons")
-
             if not call_id:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="Call ID is required.",
                 )
-
             # Update Call table
             call = (
                 self.db.query(Call)
@@ -186,13 +322,10 @@ class AuditorRepository:
                     status_code=status.HTTP_404_NOT_FOUND,
                     detail="Call not found for the given auditor.",
                 )
-
             call.is_audited = True  # always mark as audited
-
             # Update is_flagged if is_flag is not None
             if is_flag is not None:
                 call.is_flagged = is_flag
-
             # Update AuditReport
             audit_report = (
                 self.db.query(AuditReport)
@@ -201,7 +334,6 @@ class AuditorRepository:
                 )
                 .first()
             )
-
             if audit_report:
                 # Update existing report
                 if comments is not None:
@@ -226,7 +358,6 @@ class AuditorRepository:
                     updated_at=datetime.utcnow(),
                 )
                 self.db.add(new_report)
-
             # Commit changes
             self.db.commit()
             logger.info("Database update succesfull")
@@ -248,6 +379,27 @@ class AuditorRepository:
     def get_all_latest_flagged_audit(
         self, auditor_id: str
     ) -> List[AuditFlaggedResponse] | None:
+        """
+        Retrieves all flagged audits for a specific auditor.
+
+        Fetches detailed information about all calls that have been flagged
+        by the auditor, including audit report details, counsellor information,
+        and flag reasons. Results are ordered by update time (most recent first).
+
+        Args:
+            auditor_id (str): The unique identifier of the auditor.
+
+        Returns:
+
+            List[AuditFlaggedResponse] | None: A list of AuditFlaggedResponse objects
+                                             containing flagged audit details, or None
+                                             if an error occurs.
+
+        Example:
+            >>> flagged_audits = repo.get_all_latest_flagged_audit("auditor-123")
+            >>> for audit in flagged_audits:
+            ...     print(f"Flagged audit {audit.id}: {audit.flag_reason}")
+        """
         try:
             logger.info(
                 f"Getting all latest flagged audits for auditor with id: {auditor_id}"
@@ -277,11 +429,8 @@ class AuditorRepository:
                 )
                 .order_by(desc(AuditReport.updated_at))
             )
-
             results = flagged_calls_query.all()
-
             final_response: List[AuditFlaggedResponse] = []
-
             if results:
                 for result in results:
                     # print(result.updated_at)
