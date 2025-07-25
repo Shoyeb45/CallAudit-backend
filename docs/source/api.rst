@@ -92,6 +92,87 @@ Auditor Router
    :undoc-members:
    :show-inheritance:
 
+Counsellor Module
+--------------
+
+.. automodule:: features.counsellor
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Counsellor Service
+^^^^^^^^^^^^^^^
+
+.. automodule:: features.counsellor.services
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Counsellor Repository
+^^^^^^^^^^^^^^^^^^
+
+.. automodule:: features.counsellor.repository
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Counsellor Schemas
+^^^^^^^^^^^^^^^
+
+.. automodule:: features.counsellor.schemas
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Counsellor Router
+^^^^^^^^^^^^^^
+
+.. automodule:: features.counsellor.router
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Auth Module
+--------------
+
+.. automodule:: features.auth
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Auth Service
+^^^^^^^^^^^^^^^
+
+.. automodule:: features.auth.services
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Auth Repository
+^^^^^^^^^^^^^^^^^^
+
+.. automodule:: features.auth.repository
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Auth Schemas
+^^^^^^^^^^^^^^^
+
+.. automodule:: features.auth.schemas
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Auth Router
+^^^^^^^^^^^^^^
+
+.. automodule:: features.auth.router
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
 # Add similar sections for Counsellor and Auth modules if needed
 
 Core Utilities
@@ -134,7 +215,7 @@ Database
 Dependency Injection
 --------------------
 
-.. automodule:: dependecy # Note the typo in filename
+.. automodule:: dependency
    :members:
    :undoc-members:
    :show-inheritance:

@@ -1,8 +1,17 @@
+"""
+Manager API Router Module
+
+This module defines the FastAPI routes (endpoints) specifically for manager-related
+functionalities. It handles HTTP requests, delegates business logic to the
+ManagerService, and returns appropriate responses.
+
+All routes are prefixed with '/manager'.
+"""
 from typing import Optional
 from fastapi import APIRouter, Response, Form, Depends
 import logging
 
-from dependecy import get_current_user
+from dependency import get_current_user
 from features.auditor.schemas import LoginSchema
 from features.manager.schemas import (
     AuditorAnalyticsResponse,

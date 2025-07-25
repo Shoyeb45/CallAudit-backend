@@ -25,6 +25,9 @@ class DatabaseSettings(BaseSettings):
     pool_timeout: int = Field(default=30, env="DB_POOL_TIMEOUT")
     pool_recycle: int = Field(default=3600, env="DB_POOL_RECYCLE")  # 1 hour
 
+    model_config = {
+        "extra": "allow"
+    }
     class Config:
         """Pydantic configuration for DatabaseSettings."""
 
@@ -52,6 +55,9 @@ class AppSettings(BaseSettings):
     version: str = Field(default="1.0.0", env="APP_VERSION")
     api_v1_prefix: str = Field(default="/api/v1", env="API_V1_PREFIX")
 
+    model_config = {
+        "extra": "allow"
+    }
     class Config:
         """Pydantic configuration for AppSettings."""
 
@@ -71,6 +77,10 @@ class AWSSettings(BaseSettings):
         default="your_bucket_name", env="AWS_S3_BUCKET_NAME"
     )
 
+    model_config = {
+        "extra": "allow"
+    }
+    
     class Config:
         """Pydantic configuration for AWSSettings."""
 
@@ -85,6 +95,10 @@ class JWT_SETTINGS(BaseSettings):
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 1440
 
+    model_config = {
+        "extra": "allow"
+    }
+    
     class Config:
         """Pydantic configuration for JWT_SETTINGS."""
 
@@ -101,6 +115,9 @@ class LLMConfig(BaseSettings):
     azure_openai_deployment: str = Field(default="", env="AZURE_OPENAI_DEPLOYMENT")
     azure_openai_api_version: str = Field(default="", env="AZURE_OPENAI_API_VERSION")
 
+    model_config = {
+        "extra": "allow"
+    }
     class Config:
         """Pydantic configuration for LLMConfig."""
 

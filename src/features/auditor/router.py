@@ -14,7 +14,7 @@ from database import get_db
 from sqlalchemy.orm import Session
 import logging
 
-from dependecy import get_current_user
+from dependency import get_current_user
 from features.auditor.schemas import (
     BaseResponse,
     CallsResponseSchema,

@@ -11,7 +11,7 @@ All routes are prefixed with '/auth'.
 from fastapi import APIRouter, Form, HTTPException, Request, Response, Depends, status
 import logging
 
-from dependecy import get_current_user
+from dependency import get_current_user
 from features.auditor.schemas import BaseResponse, LoginSchema, User
 from features.auth.dependency import get_auth_service
 from features.auth.services import AuthService

@@ -1,3 +1,7 @@
+"""
+Manager Service Module 
+"""
+
 import logging
 import random
 import string
