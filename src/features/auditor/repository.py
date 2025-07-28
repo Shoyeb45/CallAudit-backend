@@ -14,7 +14,7 @@ from sqlalchemy import Date, cast, func
 from typing import Any, Dict, List, Optional
 from features.auditor.schemas import CallResponse, CallStats, LatestCallResponse
 from features.manager.schemas import AuditFlaggedResponse, OneDayAuditData
-from models import AuditReport, Auditor, Call, CallAnalysis, Counsellor
+from models import AuditReport, Auditor, Call, CallAnalysis, CallFlag, Counsellor
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import and_, desc
 
@@ -155,7 +155,7 @@ class AuditorRepository:
                 self.db.query(
                     func.count().filter(Call.is_audited.is_(True)).label("audited"),
                     func.count().filter(Call.is_audited.is_(False)).label("unaudited"),
-                    func.count().filter(Call.is_flagged.is_(True)).label("flagged"),
+                    func.count().filter(Call.flag != CallFlag.NORMAL).label("flagged"),
                 )
                 .filter(Call.auditor_id == auditor_id)
                 .one()
@@ -303,8 +303,16 @@ class AuditorRepository:
         try:
             call_id = data.get("call_id")
             comments = data.get("comments")
-            is_flag = data.get("is_flag")
+            flag = data.get("flag", "normal")
             flag_reasons = data.get("flag_reasons")
+            
+            if flag != "NORMAL" or flag != "CONCERN" or flag != "FATAL":
+                logger.error("Flag is not valid, it should be NORMAL, CONCERN or FATAL")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Flag is not valid, it should be NORMAL, CONCERN or FATAL"
+                )
+                
             if not call_id:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
@@ -323,9 +331,9 @@ class AuditorRepository:
                     detail="Call not found for the given auditor.",
                 )
             call.is_audited = True  # always mark as audited
-            # Update is_flagged if is_flag is not None
-            if is_flag is not None:
-                call.is_flagged = is_flag
+            # Update flag if is_flag is not None
+            if flag is not None:
+                call.flag = CallFlag(flag)
             # Update AuditReport
             audit_report = (
                 self.db.query(AuditReport)
@@ -338,8 +346,8 @@ class AuditorRepository:
                 # Update existing report
                 if comments is not None:
                     audit_report.comments = comments
-                if is_flag is not None:
-                    audit_report.is_flagged = is_flag
+                if flag is not None:
+                    audit_report.flag = CallFlag(flag)
                 if flag_reasons is not None:
                     audit_report.flag_reason = flag_reasons
                 audit_report.updated_at = datetime.utcnow()
@@ -352,7 +360,7 @@ class AuditorRepository:
                     manager_id=call.manager_id,
                     score=call.audit_score or 0,  # default to 0 if not set
                     comments=comments,
-                    is_flagged=is_flag if is_flag is not None else False,
+                    flag=flag,
                     flag_reason=flag_reasons,
                     created_at=datetime.utcnow(),
                     updated_at=datetime.utcnow(),
@@ -424,7 +432,7 @@ class AuditorRepository:
                 .filter(
                     and_(
                         AuditReport.auditor_id == auditor_id,
-                        AuditReport.is_flagged.is_(True),
+                        AuditReport.flag != CallFlag.NORMAL,
                     )
                 )
                 .order_by(desc(AuditReport.updated_at))

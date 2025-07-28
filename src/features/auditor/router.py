@@ -126,7 +126,7 @@ def get_calls(
 def approve_lead(
     call_id: str = Form(..., description="ID of the call to be approved"),
     comments: Optional[str] = Form(None, description="Optional comments for the audit"),
-    is_flag: Optional[bool] = Form(False, description="Whether to flag this audit"),
+    flag: Optional[str] = Form("normal", description="Whether to flag this audit, 'concern' or 'fatal'."),
     flag_reasons: Optional[str] = Form(
         None, description="Reasons for flagging (if applicable)"
     ),
@@ -163,7 +163,7 @@ def approve_lead(
         {
             "call_id": call_id,
             "comments": comments,
-            "is_flag": is_flag,
+            "flag": flag,
             "flag_reasons": flag_reasons,
         },
         auditor,
@@ -181,8 +181,8 @@ def approve_lead(
         500: {"description": "Internal server error"},
     },
 )
-def unflag_flagged_audit(
-    audit_id: str = Form(..., description="ID of the audit report to unflag"),
+async def unflag_flagged_audit(
+    audit_id: str,
     auditor: Auditor = Depends(get_current_user),
     service: AuditorService = Depends(get_auditor_service),
 ):

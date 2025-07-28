@@ -38,7 +38,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import and_, desc, select, func, cast, Date
 from sqlalchemy.orm import Session
 from typing import Optional
-from models import Counsellor, Manager, Lead, AuditReport, Call, Auditor
+from models import CallFlag, Counsellor, Manager, Lead, AuditReport, Call, Auditor
 from features.manager.schemas import (
     AuditFlaggedResponse,
     AuditorResponse,
@@ -268,7 +268,7 @@ class ManagerRepository:
                 .filter(
                     and_(
                         AuditReport.manager_id == manager_id,
-                        AuditReport.is_flagged.is_(True),
+                        AuditReport.flag != CallFlag.NORMAL,
                     )
                 )
                 .order_by(desc(AuditReport.updated_at))
@@ -734,8 +734,10 @@ class ManagerRepository:
                     status_code=status.HTTP_404_NOT_FOUND,
                     detail="No audit report found with given audit id",
                 )
-            report.is_flagged = False
-            report.flag_reason = "Call unflagged"
+            # Unflag audit
+            report.flag = CallFlag.NORMAL
+            # replace reason
+            report.flag_reason = ""
             report.updated_at = datetime.utcnow()
             # Sync with Call
             call = self.db.query(Call).filter(Call.id == report.call_id).first()
@@ -745,7 +747,8 @@ class ManagerRepository:
                     status_code=status.HTTP_404_NOT_FOUND,
                     detail="No call found  with given audit id",
                 )
-            call.is_flagged = False
+            call.flag = CallFlag.NORMAL
+            
             call.updated_at = datetime.utcnow()
             self.db.commit()
             logger.info(f"Succesfully unflagged audit with audit id: {audit_id}")

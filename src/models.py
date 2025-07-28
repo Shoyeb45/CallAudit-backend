@@ -11,7 +11,9 @@ from sqlalchemy import (
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+from sqlalchemy import Enum
 import uuid
+from enum import Enum as PyEnum
 
 Base = declarative_base()
 
@@ -122,6 +124,11 @@ class Counsellor(Base):
     )
 
 
+class CallFlag(PyEnum):
+    NORMAL = "NORMAL"
+    CONCERN = "CONCERN"
+    FATAL = "FATAL"
+    
 class Call(Base):
     """Call model representing a client interaction.
 
@@ -146,7 +153,7 @@ class Call(Base):
     client_number = Column(String, nullable=False)
     recording_url = Column(String)
     is_audited = Column(Boolean, default=False)
-    is_flagged = Column(Boolean, default=False)
+    flag =  Column(Enum(CallFlag), default=CallFlag.NORMAL, nullable=False)
     audit_score = Column(Float, default=0.0)
     tags = Column(String, default="")  # JSON string or comma-separated values
     created_at = Column(DateTime, default=func.now())
@@ -199,7 +206,7 @@ class AuditReport(Base):
     manager_id = Column(String, ForeignKey("managers.id"), nullable=False)
     score = Column(Float, nullable=False)
     comments = Column(Text, nullable=True)
-    is_flagged = Column(Boolean, default=False)
+    flag =  Column(Enum(CallFlag), default=CallFlag.NORMAL, nullable=False)
     flag_reason = Column(String, nullable=True)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())

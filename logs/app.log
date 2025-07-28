@@ -634,3 +634,93 @@ call_stats
 2025-07-25 09:49:04 - core.save_to_s3 - INFO - S3 client initialise succcesfully
 2025-07-25 09:49:04 - core.server - INFO - S3 client initialized and stored in app.state
 2025-07-25 09:49:18 - core.server - INFO - Shutting down FastAPI application...
+2025-07-25 11:07:11 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-07-25 11:07:12 - core.server - INFO - Starting up FastAPI application...
+2025-07-25 11:07:12 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-07-25 11:07:12 - core.server - INFO - S3 client initialized and stored in app.state
+2025-07-25 11:07:41 - dependency - ERROR - Authentication failed: Token not found in cookies
+2025-07-25 11:07:41 - database - ERROR - Database session error: 401: Authentication token is missing
+2025-07-25 11:28:16 - core.server - INFO - Shutting down FastAPI application...
+2025-07-25 11:28:29 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-07-25 11:28:30 - core.server - INFO - Starting up FastAPI application...
+2025-07-25 11:28:30 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-07-25 11:28:30 - core.server - INFO - S3 client initialized and stored in app.state
+2025-07-25 11:28:54 - core.server - INFO - Shutting down FastAPI application...
+2025-07-25 11:29:03 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-07-25 11:29:03 - core.server - INFO - Starting up FastAPI application...
+2025-07-25 11:29:03 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-07-25 11:29:03 - core.server - INFO - S3 client initialized and stored in app.state
+2025-07-25 11:31:02 - dependency - INFO - Auditor authentication successful: david.brown@company.com
+2025-07-25 11:31:02 - features.auditor.services - INFO - API endpoint called for getting flagged audits for auditor with id: b247e4fc-e06a-469b-b23a-64fe853e6504
+2025-07-25 11:31:02 - features.auditor.repository - INFO - Getting all latest flagged audits for auditor with id: b247e4fc-e06a-469b-b23a-64fe853e6504
+2025-07-25 11:31:22 - dependency - INFO - Auditor authentication successful: emma.davis@company.com
+2025-07-25 11:31:22 - features.auditor.services - INFO - API endpoint called for getting flagged audits for auditor with id: 8e40e504-4062-4117-ae2d-1314affe9691
+2025-07-25 11:31:22 - features.auditor.repository - INFO - Getting all latest flagged audits for auditor with id: 8e40e504-4062-4117-ae2d-1314affe9691
+2025-07-25 11:34:57 - dependency - INFO - Auditor authentication successful: emma.davis@company.com
+2025-07-25 11:34:57 - features.auditor.services - INFO - API endpoint called for getting flagged audits for auditor with id: 8e40e504-4062-4117-ae2d-1314affe9691
+2025-07-25 11:34:57 - features.auditor.repository - INFO - Getting all latest flagged audits for auditor with id: 8e40e504-4062-4117-ae2d-1314affe9691
+2025-07-25 11:39:02 - dependency - INFO - Auditor authentication successful: emma.davis@company.com
+2025-07-25 11:39:02 - features.auditor.services - INFO - Approve lead api called
+2025-07-25 11:39:03 - features.auditor.repository - ERROR - Audit report not found creating new one.
+2025-07-25 11:39:03 - features.auditor.repository - ERROR - SQLAlchemy error occurred: (psycopg2.errors.InvalidTextRepresentation) invalid input value for enum callflag: "concern"
+LINE 1: ...4-bfd4-f11421af1593', 6.3, 'not nice counsellor', 'concern',...
+                                                             ^
+
+[SQL: INSERT INTO audit_reports (id, call_id, auditor_id, manager_id, score, comments, flag, flag_reason, created_at, updated_at) VALUES (%(id)s, %(call_id)s, %(auditor_id)s, %(manager_id)s, %(score)s, %(comments)s, %(flag)s, %(flag_reason)s, %(created_at)s, %(updated_at)s)]
+[parameters: {'id': '4eafc00a-fcea-4c5b-9536-cbe33e72f5be', 'call_id': 'd84ff86a-6ef5-4121-a065-2282bf61bec1', 'auditor_id': '8e40e504-4062-4117-ae2d-1314affe9691', 'manager_id': '54b6066b-f833-4a34-bfd4-f11421af1593', 'score': 6.3, 'comments': 'not nice counsellor', 'flag': 'concern', 'flag_reason': 'counsellor yelling', 'created_at': datetime.datetime(2025, 7, 25, 6, 9, 3, 12876), 'updated_at': datetime.datetime(2025, 7, 25, 6, 9, 3, 12876)}]
+(Background on this error at: https://sqlalche.me/e/20/9h9h)
+2025-07-25 11:39:03 - database - ERROR - Database session error: 500: Database error occurred while updating call and audit report.
+2025-07-25 11:41:21 - dependency - INFO - Auditor authentication successful: emma.davis@company.com
+2025-07-25 11:41:21 - features.auditor.services - INFO - Approve lead api called
+2025-07-25 11:41:21 - features.auditor.repository - ERROR - Failed to approve lead and update db, error: 'CONCERN' is not a valid CallFlag
+2025-07-25 11:41:21 - database - ERROR - Database session error: 500: Internal server error occurred while approving lead.
+2025-07-25 11:41:54 - core.server - INFO - Shutting down FastAPI application...
+2025-07-25 11:42:03 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-07-25 11:42:03 - core.server - INFO - Starting up FastAPI application...
+2025-07-25 11:42:03 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-07-25 11:42:03 - core.server - INFO - S3 client initialized and stored in app.state
+2025-07-25 11:42:11 - dependency - INFO - Auditor authentication successful: emma.davis@company.com
+2025-07-25 11:42:11 - features.auditor.services - INFO - Approve lead api called
+2025-07-25 11:42:11 - features.auditor.repository - ERROR - Audit report not found creating new one.
+2025-07-25 11:42:12 - features.auditor.repository - INFO - Database update succesfull
+2025-07-25 11:45:54 - core.server - INFO - Shutting down FastAPI application...
+2025-07-25 11:46:21 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-07-25 11:46:22 - core.server - INFO - Starting up FastAPI application...
+2025-07-25 11:46:22 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-07-25 11:46:22 - core.server - INFO - S3 client initialized and stored in app.state
+2025-07-25 11:46:35 - dependency - INFO - Auditor authentication successful: emma.davis@company.com
+2025-07-25 11:46:35 - features.auditor.services - INFO - API endpoint called for getting flagged audits for auditor with id: 8e40e504-4062-4117-ae2d-1314affe9691
+2025-07-25 11:46:35 - features.auditor.repository - INFO - Getting all latest flagged audits for auditor with id: 8e40e504-4062-4117-ae2d-1314affe9691
+2025-07-25 11:48:51 - core.server - INFO - Shutting down FastAPI application...
+2025-07-25 11:48:57 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-07-25 11:48:57 - core.server - INFO - Starting up FastAPI application...
+2025-07-25 11:48:58 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-07-25 11:48:58 - core.server - INFO - S3 client initialized and stored in app.state
+2025-07-25 11:49:26 - core.server - INFO - Shutting down FastAPI application...
+2025-07-25 11:49:39 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-07-25 11:49:39 - core.server - INFO - Starting up FastAPI application...
+2025-07-25 11:49:39 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-07-25 11:49:39 - core.server - INFO - S3 client initialized and stored in app.state
+2025-07-25 11:51:11 - dependency - INFO - Auditor authentication successful: emma.davis@company.com
+2025-07-25 11:51:46 - core.server - INFO - Shutting down FastAPI application...
+2025-07-25 11:51:52 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-07-25 11:51:52 - core.server - INFO - Starting up FastAPI application...
+2025-07-25 11:51:52 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-07-25 11:51:52 - core.server - INFO - S3 client initialized and stored in app.state
+2025-07-25 11:52:27 - dependency - INFO - Auditor authentication successful: emma.davis@company.com
+2025-07-25 11:52:28 - features.manager.repository - INFO - Succesfully unflagged audit with audit id: d7d42139-5236-46a5-9f70-36272fed59ad
+2025-07-25 11:55:56 - core.server - INFO - Shutting down FastAPI application...
+2025-07-25 11:56:38 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-07-25 11:56:38 - core.server - INFO - Starting up FastAPI application...
+2025-07-25 11:56:38 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-07-25 11:56:38 - core.server - INFO - S3 client initialized and stored in app.state
+2025-07-25 11:57:37 - dependency - INFO - Manager authentication successful: sarah.johnson@company.com
+2025-07-25 11:57:37 - features.manager.services - INFO - API endpoint called for getting flagged audits
+2025-07-25 11:57:37 - features.manager.repository - INFO - Getting all latest flagged audits for manager with id: 54b6066b-f833-4a34-bfd4-f11421af1593
+2025-07-26 22:34:01 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-07-26 22:34:01 - core.server - INFO - Starting up FastAPI application...
+2025-07-26 22:34:01 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-07-26 22:34:01 - core.server - INFO - S3 client initialized and stored in app.state
+2025-07-26 22:34:10 - fastapi - WARNING - email-validator not installed, email fields will be treated as str.
+To install, run: pip install email-validator
+2025-07-26 22:57:32 - core.server - INFO - Shutting down FastAPI application...

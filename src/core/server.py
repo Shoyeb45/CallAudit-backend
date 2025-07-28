@@ -73,10 +73,24 @@ def create_server():
         # Create FastAPI application with metadata
         app = FastAPI(
             title=app_settings.app_name,
-            description="FastAPI application with Postgresql and SQLAlchemy",
+            description="""
+This API allows Managers, Auditors, and Counsellors to manage calls, audits, and leads.
+Features:
+- Upload call recordings
+- Audit call quality
+- AI call analysis
+- Lead management
+
+Built using FastAPI, SQLAlchemy, and PostgreSQL.            
+""",
             version=app_settings.version,
             debug=app_settings.debug,
             lifespan=lifespan,
+             contact={
+                "name": "Shoyeb Ansari",
+                "email": "mohammad.ansari4@pw.live",
+                "url": "https://github.com/Ashutosh-pw-ioi/CallAudit-backend",
+            },
         )
 
         # Configure CORS middleware for cross-origin resource sharing
