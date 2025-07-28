@@ -306,7 +306,7 @@ class AuditorRepository:
             flag = data.get("flag", "normal")
             flag_reasons = data.get("flag_reasons")
             
-            if flag != "NORMAL" or flag != "CONCERN" or flag != "FATAL":
+            if flag != "NORMAL" and flag != "CONCERN" and flag != "FATAL":
                 logger.error("Flag is not valid, it should be NORMAL, CONCERN or FATAL")
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
