@@ -209,7 +209,7 @@ class ManagerRepository:
             logger.info(f"Getting all flagged calls for manager with id: {manager_id}")
             count = (
                 self.db.query(func.count(func.distinct(Call.id)))
-                .filter(Call.manager_id == manager_id, Call.is_flagged.is_(True))
+                .filter(Call.manager_id == manager_id, Call.flag != CallFlag.NORMAL)
                 .scalar()
             )
             return count
