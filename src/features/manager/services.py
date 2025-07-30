@@ -89,13 +89,32 @@ class ManagerService:
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail="Failed to generate JWT token",
                 )
+            refresh_token = self.jwt_util.create_refresh_token({
+                "id": manager.id
+            })
+            
+            if not refresh_token:
+                logger.error("Failed to generate refresh token")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Failed to generate refresh token",
+                )
+                
             response.set_cookie(
                 key="token",
                 value=token,
                 httponly=True,
                 secure=False,  # Set True if HTTPS
                 samesite="lax",  # or 'strict' or 'none'
-                max_age=self.jwt_util.access_token_expire_minutes,
+                max_age=24 * 60 * 60,  # Convert minutes to seconds if needed by set_cookie
+            )
+            response.set_cookie(
+                key="refresh_token",
+                value=refresh_token,
+                httponly=True,
+                secure=True,
+                samesite="lax",
+                max_age=7 * 24 * 60 * 60
             )
             return LoginSchema(
                 success=True,

@@ -101,6 +101,7 @@ class AuditorService:
                     detail=f"Password not matched",
                     status_code=status.HTTP_401_UNAUTHORIZED,
                 )
+                
             # Generate JWT
             token_payload = {
                 "id": auditor.id,
@@ -108,12 +109,22 @@ class AuditorService:
                 "email": auditor.email,
                 "role": "auditor",
             }
+            
             token = self.jwt_util.create_jwt_token(token_payload)
             if not token:
                 logger.error("Failed to generate JWT token")
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail="Failed to generate JWT token",
+                )
+            refresh_token = self.jwt_util.create_refresh_token({
+                "id": auditor.id
+            })
+            if not refresh_token:
+                logger.error("Failed to generate refresh token")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Failed to generate refresh token",
                 )
             # Set the JWT token in an HTTP-only cookie
             # Security Note: 'secure' should be True in production with HTTPS
@@ -123,9 +134,17 @@ class AuditorService:
                 httponly=True,
                 secure=False,  # Set True if HTTPS
                 samesite="lax",  # or 'strict' or 'none'
-                max_age=self.jwt_util.access_token_expire_minutes
-                * 60,  # Convert minutes to seconds if needed by set_cookie
+                max_age=24 * 60 * 60,  # Convert minutes to seconds if needed by set_cookie
             )
+            response.set_cookie(
+                key="refresh_token",
+                value=refresh_token,
+                httponly=True,
+                secure=True,
+                samesite="lax",
+                max_age=7 * 24 * 60 * 60
+            )
+            
             return LoginSchema(
                 success=True,
                 message="Auditor logged in successfully.",
