@@ -836,3 +836,13 @@ user.ManagerSchema
 2025-07-30 19:45:01 - dependency - INFO - Manager authentication successful: john.smith@company.com
 2025-07-30 19:45:20 - dependency - INFO - Auditor authentication successful: david.brown@company.com
 2025-07-30 19:45:29 - core.server - INFO - Shutting down FastAPI application...
+2025-07-30 19:53:21 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-07-30 19:53:21 - core.server - INFO - Starting up FastAPI application...
+2025-07-30 19:53:21 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-07-30 19:53:21 - core.server - INFO - S3 client initialized and stored in app.state
+2025-07-30 19:54:38 - features.manager.services - ERROR - No manager found with given email
+2025-07-30 19:54:38 - database - ERROR - Database session error: 404: No manager found with given email
+2025-07-30 19:55:01 - dependency - INFO - Manager authentication successful: john.smith@company.com
+2025-07-30 19:55:01 - features.manager.repository - INFO - Getting auditor and audited calls count
+2025-07-30 19:55:01 - features.manager.repository - INFO - Getting auditors
+2025-07-30 19:55:38 - core.server - INFO - Shutting down FastAPI application...

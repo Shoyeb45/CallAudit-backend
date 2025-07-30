@@ -437,6 +437,7 @@ class ManagerRepository:
                     Auditor.id,
                     Auditor.name,
                     Auditor.is_active,
+                    Auditor.email,
                     func.count(func.distinct(Lead.id)).label("total_assigned_leads"),
                     func.count(func.distinct(AuditReport.id)).label(
                         "total_audited_leads"
@@ -457,6 +458,7 @@ class ManagerRepository:
                         is_active=result.is_active,
                         total_assigned_leads=result.total_assigned_leads,
                         total_audited_leads=result.total_audited_leads,
+                        email=result.email
                     )
                 )
             return final_response

@@ -60,6 +60,7 @@ class AuditorResponse(BaseModel):
     is_active: bool
     total_assigned_leads: int
     total_audited_leads: int
+    email: str
 
 
 class AuditorAnalyticsResponse(BaseResponse):
