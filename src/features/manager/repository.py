@@ -217,6 +217,8 @@ class ManagerRepository:
             logger.error(f"Failed to get total audited calls, error: {str(e)}")
             return None
 
+
+                
     def get_all_latest_flagged_audit(
         self, manager_id: str
     ) -> List[AuditFlaggedResponse] | None:

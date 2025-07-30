@@ -14,7 +14,7 @@ from sqlalchemy import Date, cast, func
 from typing import Any, Dict, List, Optional
 from features.auditor.schemas import CallResponse, CallStats, LatestCallResponse
 from features.manager.schemas import AuditFlaggedResponse, OneDayAuditData
-from models import AuditReport, Auditor, Call, CallAnalysis, CallFlag, Counsellor
+from models import AuditReport, Auditor, Call, CallAnalysis, CallFlag, Counsellor, Manager
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import and_, desc
 
@@ -71,6 +71,8 @@ class AuditorRepository:
             logger.error(f"Failed to get auditor, error: {str(e)}")
             return None
 
+
+               
     def get_calls(self, auditor_id: str) -> List[CallResponse] | None:
         """
         Retrieves all calls assigned to a specific auditor.

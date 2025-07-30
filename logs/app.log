@@ -724,3 +724,115 @@ LINE 1: ...4-bfd4-f11421af1593', 6.3, 'not nice counsellor', 'concern',...
 2025-07-26 22:34:10 - fastapi - WARNING - email-validator not installed, email fields will be treated as str.
 To install, run: pip install email-validator
 2025-07-26 22:57:32 - core.server - INFO - Shutting down FastAPI application...
+2025-07-30 14:06:15 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-07-30 14:06:15 - core.server - INFO - Starting up FastAPI application...
+2025-07-30 14:06:16 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-07-30 14:06:16 - core.server - INFO - S3 client initialized and stored in app.state
+2025-07-30 14:06:37 - fastapi - WARNING - email-validator not installed, email fields will be treated as str.
+To install, run: pip install email-validator
+2025-07-30 14:16:35 - features.counsellor.router - INFO - Successfully saved call recording file 'manjiri_bansode_unprofessional no patience_pw_live_2025-07-11-12-26-14.mp3' to temp directory
+2025-07-30 14:16:35 - features.counsellor.services - INFO - Processing call recording and adding the call in database
+2025-07-30 14:16:35 - features.counsellor.repository - INFO - Adding call in database
+2025-07-30 14:16:41 - features.counsellor.repository - INFO - Successfully added call in database
+2025-07-30 14:16:41 - features.counsellor.services - INFO - Starting background thread for call analysis (Call ID: 3f87206a-2884-4616-b5d6-fb29207cbf6c)
+2025-07-30 14:16:41 - features.counsellor.services - INFO - Starting background processing for call 3f87206a-2884-4616-b5d6-fb29207cbf6c
+2025-07-30 14:16:41 - features.counsellor.services - INFO - Uploading audio for call 3f87206a-2884-4616-b5d6-fb29207cbf6c to S3.
+2025-07-30 14:16:44 - features.counsellor.services - INFO - Successfully uploaded audio for call 3f87206a-2884-4616-b5d6-fb29207cbf6c to S3.
+2025-07-30 14:16:44 - features.counsellor.services - INFO - Uploaded audio for call 3f87206a-2884-4616-b5d6-fb29207cbf6c to S3.
+2025-07-30 14:16:44 - features.counsellor.repository - INFO - Updating call recording audio..
+2025-07-30 14:16:45 - features.counsellor.repository - INFO - Successfully updated call
+2025-07-30 14:16:45 - features.counsellor.services - INFO - Updated database record for call 3f87206a-2884-4616-b5d6-fb29207cbf6c with S3 URL.
+2025-07-30 14:16:45 - features.counsellor.services - INFO - Performing AI analysis for audio
+2025-07-30 14:16:45 - features.counsellor.services - INFO - Extracting transcription from audio
+2025-07-30 14:17:40 - httpx - INFO - HTTP Request: POST https://api.elevenlabs.io/v1/speech-to-text "HTTP/1.1 200 OK"
+2025-07-30 14:17:41 - features.counsellor.services - INFO - Successfully transcribed audio
+2025-07-30 14:17:41 - features.counsellor.services - INFO - Analyzing conversation
+2025-07-30 14:18:01 - httpx - INFO - HTTP Request: POST https://alakhaieastus2.openai.azure.com/openai/deployments/gpt-4.1/chat/completions?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-07-30 14:18:01 - features.counsellor.services - INFO - Successfully analyzed conversation
+2025-07-30 14:18:01 - features.counsellor.services - INFO - Generating summary
+2025-07-30 14:18:09 - httpx - INFO - HTTP Request: POST https://alakhaieastus2.openai.azure.com/openai/deployments/gpt-4.1/chat/completions?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-07-30 14:18:09 - features.counsellor.services - INFO - Successfully generated summary
+2025-07-30 14:18:09 - features.counsellor.services - INFO - Getting sentiment score
+2025-07-30 14:18:10 - httpx - INFO - HTTP Request: POST https://alakhaieastus2.openai.azure.com/openai/deployments/gpt-4.1/chat/completions?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-07-30 14:18:10 - features.counsellor.services - INFO - Successfully generated sentiment score
+2025-07-30 14:18:10 - features.counsellor.services - INFO - Getting anomalies
+2025-07-30 14:18:19 - httpx - INFO - HTTP Request: POST https://alakhaieastus2.openai.azure.com/openai/deployments/gpt-4.1/chat/completions?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-07-30 14:18:19 - features.counsellor.services - INFO - Successfully generated anomalies
+2025-07-30 14:18:19 - features.counsellor.services - INFO - Extracting keywords
+2025-07-30 14:18:21 - httpx - INFO - HTTP Request: POST https://alakhaieastus2.openai.azure.com/openai/deployments/gpt-4.1/chat/completions?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-07-30 14:18:21 - features.counsellor.services - INFO - Successfully extracted keywords
+2025-07-30 14:18:21 - features.counsellor.services - INFO - Getting AI confidence score
+2025-07-30 14:18:21 - features.counsellor.services - INFO - Successfully got AI confidence score
+2025-07-30 14:18:21 - features.counsellor.services - INFO - Completed AI analysis for call 3f87206a-2884-4616-b5d6-fb29207cbf6c.
+2025-07-30 14:18:23 - features.counsellor.repository - INFO - Successfully saved AI analysis for call ID 3f87206a-2884-4616-b5d6-fb29207cbf6c
+2025-07-30 14:18:23 - features.counsellor.services - INFO - Saved AI analysis results for call 3f87206a-2884-4616-b5d6-fb29207cbf6c to database.
+2025-07-30 14:18:23 - features.counsellor.services - INFO - Cleaned up temporary audio file for call 3f87206a-2884-4616-b5d6-fb29207cbf6c.
+2025-07-30 14:18:23 - features.counsellor.services - INFO - Successfully processed audio for call 3f87206a-2884-4616-b5d6-fb29207cbf6c
+2025-07-30 14:29:29 - dependency - INFO - Auditor authentication successful: david.brown@company.com
+2025-07-30 14:29:49 - dependency - INFO - Auditor authentication successful: david.brown@company.com
+2025-07-30 14:30:01 - dependency - INFO - Auditor authentication successful: david.brown@company.com
+2025-07-30 14:30:01 - features.auditor.services - INFO - API endpoint called for getting flagged audits for auditor with id: b247e4fc-e06a-469b-b23a-64fe853e6504
+2025-07-30 14:30:01 - features.auditor.repository - INFO - Getting all latest flagged audits for auditor with id: b247e4fc-e06a-469b-b23a-64fe853e6504
+2025-07-30 14:35:48 - dependency - INFO - Auditor authentication successful: david.brown@company.com
+2025-07-30 14:42:08 - dependency - INFO - Auditor authentication successful: david.brown@company.com
+2025-07-30 18:42:29 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-07-30 18:42:29 - core.server - INFO - Starting up FastAPI application...
+2025-07-30 18:42:30 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-07-30 18:42:30 - core.server - INFO - S3 client initialized and stored in app.state
+2025-07-30 19:22:11 - fastapi - WARNING - email-validator not installed, email fields will be treated as str.
+To install, run: pip install email-validator
+2025-07-30 19:23:02 - dependency - INFO - Auditor authentication successful: david.brown@company.com
+2025-07-30 19:23:02 - features.manager.repository - ERROR - Internal server occurred while getting name of the manager, error : 'Depends' object has no attribute 'query'
+2025-07-30 19:23:02 - database - ERROR - Database session error: HTTPException.__init__() missing 1 required positional argument: 'status_code'
+2025-07-30 19:31:47 - core.server - INFO - Shutting down FastAPI application...
+2025-07-30 19:31:54 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-07-30 19:31:54 - core.server - INFO - Starting up FastAPI application...
+2025-07-30 19:31:54 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-07-30 19:31:54 - core.server - INFO - S3 client initialized and stored in app.state
+2025-07-30 19:32:06 - dependency - INFO - Auditor authentication successful: david.brown@company.com
+2025-07-30 19:32:06 - database - ERROR - Database session error: 500: Internal server error occurred while checking authentication
+2025-07-30 19:35:18 - core.server - INFO - Shutting down FastAPI application...
+2025-07-30 19:35:24 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-07-30 19:35:24 - core.server - INFO - Starting up FastAPI application...
+2025-07-30 19:35:24 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-07-30 19:35:24 - core.server - INFO - S3 client initialized and stored in app.state
+2025-07-30 19:35:39 - dependency - INFO - Auditor authentication successful: david.brown@company.com
+2025-07-30 19:35:39 - root - ERROR - Internal server error occurred while checking authentication, error: ManagerRepository.get_manager() got an unexpected keyword argument 'manager_id'
+2025-07-30 19:35:39 - database - ERROR - Database session error: 500: Internal server error occurred while checking authentication
+2025-07-30 19:38:17 - core.server - INFO - Shutting down FastAPI application...
+2025-07-30 19:38:20 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-07-30 19:38:20 - core.server - INFO - Starting up FastAPI application...
+2025-07-30 19:38:20 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-07-30 19:38:20 - core.server - INFO - S3 client initialized and stored in app.state
+2025-07-30 19:38:27 - dependency - INFO - Auditor authentication successful: david.brown@company.com
+2025-07-30 19:38:27 - root - ERROR - Internal server error occurred while checking authentication, error: 2 validation errors for AuditorSchema
+success
+  Field required [type=missing, input_value={'id': 'b247e4fc-e06a-469...'manager': 'John Smith'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+message
+  Field required [type=missing, input_value={'id': 'b247e4fc-e06a-469...'manager': 'John Smith'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing
+2025-07-30 19:38:27 - database - ERROR - Database session error: 500: Internal server error occurred while checking authentication
+2025-07-30 19:40:21 - core.server - INFO - Shutting down FastAPI application...
+2025-07-30 19:40:24 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-07-30 19:40:24 - core.server - INFO - Starting up FastAPI application...
+2025-07-30 19:40:24 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-07-30 19:40:24 - core.server - INFO - S3 client initialized and stored in app.state
+2025-07-30 19:40:36 - dependency - INFO - Auditor authentication successful: david.brown@company.com
+2025-07-30 19:41:24 - dependency - INFO - Manager authentication successful: john.smith@company.com
+2025-07-30 19:41:24 - root - ERROR - Internal server error occurred while checking authentication, error: 2 validation errors for CheckAuthSchema
+user.AuditorSchema
+  Input should be a valid dictionary or instance of AuditorSchema [type=model_type, input_value=User(id='2ace8eeb-9eba-45...ny.com', role='manager'), input_type=User]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+user.ManagerSchema
+  Input should be a valid dictionary or instance of ManagerSchema [type=model_type, input_value=User(id='2ace8eeb-9eba-45...ny.com', role='manager'), input_type=User]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-07-30 19:41:24 - database - ERROR - Database session error: 500: Internal server error occurred while checking authentication
+2025-07-30 19:44:44 - core.server - INFO - Shutting down FastAPI application...
+2025-07-30 19:44:51 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-07-30 19:44:51 - core.server - INFO - Starting up FastAPI application...
+2025-07-30 19:44:51 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-07-30 19:44:51 - core.server - INFO - S3 client initialized and stored in app.state
+2025-07-30 19:45:01 - dependency - INFO - Manager authentication successful: john.smith@company.com
+2025-07-30 19:45:20 - dependency - INFO - Auditor authentication successful: david.brown@company.com
+2025-07-30 19:45:29 - core.server - INFO - Shutting down FastAPI application...

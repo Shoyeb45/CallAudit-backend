@@ -14,7 +14,11 @@ import logging
 from dependency import get_current_user
 from features.auditor.schemas import BaseResponse, LoginSchema, User
 from features.auth.dependency import get_auth_service
+from features.auth.schemas import AuditorSchema, CheckAuthSchema, ManagerSchema
 from features.auth.services import AuthService
+from features.manager.dependency import get_manager_repository
+from features.manager.repository import ManagerRepository
+from features.manager.services import ManagerService
 from models import Auditor, Manager
 
 logger = logging.getLogger(__name__)
@@ -117,7 +121,7 @@ def logout(
 @router.get(
     "/check-auth",
     description="API endpoint to verify authentication status and get user details",
-    response_model=LoginSchema,
+    response_model=CheckAuthSchema,
     summary="Check Authentication Status",
     responses={
         200: {"description": "User is authenticated"},
@@ -125,7 +129,7 @@ def logout(
         500: {"description": "Internal server error"},
     },
 )
-def check_auth(user=Depends(get_current_user)):
+def check_auth(repo: ManagerRepository = Depends(get_manager_repository), user=Depends(get_current_user)):
     """
     Verify the authentication status of the current user and return user details.
 
@@ -147,20 +151,38 @@ def check_auth(user=Depends(get_current_user)):
               auditor/manager.
             - 500 Internal Server Error: If an unexpected error occurs.
     """
-    role = None
-    if isinstance(user, Auditor):
-        role = "auditor"
-    elif isinstance(user, Manager):
-        role = "manager"
+    try:
+        role = None
+        if isinstance(user, Auditor):
+            role = "auditor"
+    
+            manager = repo.get_manager(id=user.manager_id)
+            
+            return CheckAuthSchema(
+                success=True,
+                message="User is authenticated",
+                user=AuditorSchema(id=user.id, name=user.name, email=user.email, role=role, manager=manager.name)
+            )
+        elif isinstance(user, Manager):
+            role = "manager"
 
-    if not role:
+            return CheckAuthSchema(
+                success=True,
+                message="User is authenticated",
+                user=ManagerSchema(id=user.id, name=user.name, email=user.email, role=role),
+            )
+
+        
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Unauthorised access, user is not auditor or manager.",
         )
 
-    return LoginSchema(
-        success=True,
-        message="User is authenticated",
-        user=User(id=user.id, name=user.name, email=user.email, role=role),
-    )
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logging.error(f"Internal server error occurred while checking authentication, error: {str(e)}")
+        raise HTTPException(
+            detail="Internal server error occurred while checking authentication",
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
