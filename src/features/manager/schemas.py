@@ -5,6 +5,7 @@ This module defines Pydantic models (schemas) used for data validation and seria
 in the manager feature set. These schemas represent the structure of data exchanged
 between the API endpoints, services, and clients for manager-related operations.
 """
+
 from pydantic import BaseModel
 from datetime import datetime
 from typing import List

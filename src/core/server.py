@@ -86,7 +86,7 @@ Built using FastAPI, SQLAlchemy, and PostgreSQL.
             version=app_settings.version,
             debug=app_settings.debug,
             lifespan=lifespan,
-             contact={
+            contact={
                 "name": "Shoyeb Ansari",
                 "email": "mohammad.ansari4@pw.live",
                 "url": "https://github.com/Ashutosh-pw-ioi/CallAudit-backend",

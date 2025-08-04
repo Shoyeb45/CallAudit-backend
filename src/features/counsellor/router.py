@@ -1,4 +1,5 @@
 # Import necessary modules from FastAPI for building the API
+from typing import Optional
 from fastapi import (
     APIRouter,
     Depends,
@@ -111,3 +112,24 @@ async def upload_audio_and_perform_ai_analysis(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to process audio",
         )
+
+
+@router.post("/", description="Endpoint to add new counsellor")
+def add_counsellor(
+    manager_id: str,
+    name: str,
+    auditor_id: str,
+    email: str,
+    phone: str,
+    password: Optional[str] = None,
+    service: CounsellorService = Depends(get_counsellor_service),
+):
+    return service.add_new_counsellor(
+        {
+            "manager_id": manager_id,
+            "auditor_id": auditor_id,
+            "name": name,
+            "email": email,
+            "phone": phone,
+        }
+    )

@@ -865,3 +865,72 @@ To install, run: pip install email-validator
 2025-07-30 23:24:37 - core.save_to_s3 - INFO - S3 client initialise succcesfully
 2025-07-30 23:24:37 - core.server - INFO - S3 client initialized and stored in app.state
 2025-07-30 23:25:43 - core.server - INFO - Shutting down FastAPI application...
+2025-08-04 11:08:59 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-08-04 11:08:59 - core.server - INFO - Starting up FastAPI application...
+2025-08-04 11:09:00 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-08-04 11:09:00 - core.server - INFO - S3 client initialized and stored in app.state
+2025-08-04 11:10:40 - fastapi - WARNING - email-validator not installed, email fields will be treated as str.
+To install, run: pip install email-validator
+2025-08-04 11:13:24 - dependency - INFO - Auditor authentication successful: emma.davis@company.com
+2025-08-04 11:13:39 - dependency - INFO - Auditor authentication successful: emma.davis@company.com
+2025-08-04 11:15:55 - dependency - INFO - Auditor authentication successful: emma.davis@company.com
+2025-08-04 11:26:30 - dependency - INFO - Auditor authentication successful: emma.davis@company.com
+2025-08-04 11:26:30 - features.auditor.services - INFO - API endpoint called for getting flagged audits for auditor with id: 8e40e504-4062-4117-ae2d-1314affe9691
+2025-08-04 11:26:30 - features.auditor.repository - INFO - Getting all latest flagged audits for auditor with id: 8e40e504-4062-4117-ae2d-1314affe9691
+2025-08-04 11:47:02 - core.server - INFO - Shutting down FastAPI application...
+2025-08-04 12:01:39 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-08-04 12:01:39 - core.server - INFO - Starting up FastAPI application...
+2025-08-04 12:01:40 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-08-04 12:01:40 - core.server - INFO - S3 client initialized and stored in app.state
+2025-08-04 12:04:25 - fastapi - WARNING - email-validator not installed, email fields will be treated as str.
+To install, run: pip install email-validator
+2025-08-04 12:08:49 - core.server - INFO - Shutting down FastAPI application...
+2025-08-04 12:09:04 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-08-04 12:09:05 - core.server - INFO - Starting up FastAPI application...
+2025-08-04 12:09:05 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-08-04 12:09:05 - core.server - INFO - S3 client initialized and stored in app.state
+2025-08-04 12:09:31 - core.server - INFO - Shutting down FastAPI application...
+2025-08-04 12:09:38 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-08-04 12:09:38 - core.server - INFO - Starting up FastAPI application...
+2025-08-04 12:09:39 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-08-04 12:09:39 - core.server - INFO - S3 client initialized and stored in app.state
+2025-08-04 12:09:40 - core.server - INFO - Shutting down FastAPI application...
+2025-08-04 13:01:45 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-08-04 13:01:45 - core.server - INFO - Starting up FastAPI application...
+2025-08-04 13:01:46 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-08-04 13:01:46 - core.server - INFO - S3 client initialized and stored in app.state
+2025-08-04 13:02:55 - passlib.handlers.bcrypt - WARNING - (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "E:\IOI-Internship\CallAudit-backend\.venv\Lib\site-packages\passlib\handlers\bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+2025-08-04 13:03:01 - features.manager.repository - INFO - Succesfully created new manager in database
+2025-08-04 13:03:01 - features.manager.services - INFO - Manager created successfully
+2025-08-04 13:03:01 - features.manager.services - ERROR - Error while creating new manager, exceptions must derive from BaseException
+2025-08-04 13:03:01 - database - ERROR - Database session error: 500: Internal Server error occurred while creating new manager
+2025-08-04 13:06:35 - core.server - INFO - Shutting down FastAPI application...
+2025-08-04 13:07:21 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-08-04 13:07:21 - core.server - INFO - Starting up FastAPI application...
+2025-08-04 13:07:21 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-08-04 13:07:21 - core.server - INFO - S3 client initialized and stored in app.state
+2025-08-04 13:07:28 - passlib.handlers.bcrypt - WARNING - (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "E:\IOI-Internship\CallAudit-backend\.venv\Lib\site-packages\passlib\handlers\bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+2025-08-04 13:07:33 - features.manager.repository - INFO - Succesfully created new manager in database
+2025-08-04 13:07:33 - features.manager.services - INFO - Manager created successfully
+2025-08-04 13:08:20 - features.auditor.repository - INFO - Succesfully created new auditor in database
+2025-08-04 13:08:20 - features.auditor.services - INFO - Auditor created successfully
+2025-08-04 13:10:58 - features.counsellor.repository - ERROR - Internal server error occurred while creating new counsellor, error: 'password' is an invalid keyword argument for Counsellor
+2025-08-04 13:10:58 - database - ERROR - Database session error: 500: Internal server error occurred while creating new counsellor
+2025-08-04 13:11:48 - core.server - INFO - Shutting down FastAPI application...
+2025-08-04 13:11:52 - __main__ - INFO - Environment variables loaded successfully, test env: Succesfully loaded
+2025-08-04 13:11:52 - core.server - INFO - Starting up FastAPI application...
+2025-08-04 13:11:52 - core.save_to_s3 - INFO - S3 client initialise succcesfully
+2025-08-04 13:11:52 - core.server - INFO - S3 client initialized and stored in app.state
+2025-08-04 13:12:03 - features.counsellor.repository - INFO - Succesfully created new counsellor in database
+2025-08-04 13:12:03 - features.counsellor.services - INFO - Counsellor created successfully
+2025-08-04 13:20:51 - core.server - INFO - Shutting down FastAPI application...

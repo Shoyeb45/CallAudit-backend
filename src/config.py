@@ -28,7 +28,7 @@ class DatabaseSettings(BaseSettings):
     # model_config = {
     #     "extra": "allow"
     # }
-    
+
     class Config:
         """Pydantic configuration for DatabaseSettings."""
 
@@ -81,7 +81,7 @@ class AWSSettings(BaseSettings):
     # model_config = {
     #     "extra": "allow"
     # }
-    
+
     class Config:
         """Pydantic configuration for AWSSettings."""
 
@@ -99,7 +99,7 @@ class JWT_SETTINGS(BaseSettings):
     # model_config = {
     #     "extra": "allow"
     # }
-    
+
     class Config:
         """Pydantic configuration for JWT_SETTINGS."""
 
@@ -122,7 +122,6 @@ class LLMConfig(BaseSettings):
     class Config:
         """Pydantic configuration for LLMConfig."""
 
-        
         env_file = "../.env"
         case_sensitive = False
 

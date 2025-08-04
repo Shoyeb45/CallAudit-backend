@@ -1,6 +1,10 @@
+from typing import Dict
+
+from fastapi import HTTPException, status
 from models import Call, CallAnalysis, Counsellor
 from sqlalchemy.orm import Session
 import logging
+from passlib.context import CryptContext
 
 logger = logging.getLogger(__name__)
 
@@ -144,3 +148,26 @@ class CounsellorRepository:
                 f"Failed to save AI analysis for call ID {call_id} in database: {e}"
             )
             raise e
+
+    def create_new_counsellor(self, counsellor_data: Dict[str, any]):
+        try:
+            # hash the password and update the dictionary
+            # pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+            # counsellor_data["password"] = pwd_context.hash(counsellor_data["password"])
+
+            counsellor = Counsellor(**counsellor_data)
+
+            self.db.add(counsellor)
+            self.db.commit()
+            self.db.refresh(counsellor)
+            logger.info("Succesfully created new counsellor in database")
+            return True
+
+        except Exception as e:
+            logger.error(
+                f"Internal server error occurred while creating new counsellor, error: {str(e)}"
+            )
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Internal server error occurred while creating new counsellor",
+            )

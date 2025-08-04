@@ -14,9 +14,7 @@ class JWTUtil:
     def create_jwt_token(self, data: dict) -> str | None:
         try:
             to_encode = data.copy()
-            expire = datetime.utcnow() + timedelta(
-                days=1
-            )
+            expire = datetime.utcnow() + timedelta(days=1)
             to_encode.update({"exp": expire})
             return jwt.encode(
                 to_encode,
@@ -30,9 +28,7 @@ class JWTUtil:
     def create_refresh_token(self, data: dict) -> str | None:
         try:
             to_encode = data.copy()
-            expire = datetime.utcnow() + timedelta(
-                days=7
-            )
+            expire = datetime.utcnow() + timedelta(days=7)
             to_encode.update({"exp": expire})
             return jwt.encode(
                 to_encode,
@@ -42,7 +38,7 @@ class JWTUtil:
         except Exception as e:
             logger.error(f"Failed to generate refresh token, error: {str(e)}")
             return None
-        
+
 
 def get_jwt_util():
     return JWTUtil()

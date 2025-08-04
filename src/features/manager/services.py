@@ -1,7 +1,8 @@
 """
-Manager Service Module 
+Manager Service Module
 """
 
+from passlib.context import CryptContext
 import logging
 import random
 import string
@@ -68,6 +69,10 @@ class ManagerService:
                     status_code=status.HTTP_404_NOT_FOUND,
                 )
             # compare password
+
+            # pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+            # is_password_correct = pwd_context.verify(password, manager.password)
+
             if manager.password != password:
                 logger.error("Password not matched")
                 raise HTTPException(
@@ -89,24 +94,24 @@ class ManagerService:
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail="Failed to generate JWT token",
                 )
-            refresh_token = self.jwt_util.create_refresh_token({
-                "id": manager.id
-            })
-            
+            refresh_token = self.jwt_util.create_refresh_token({"id": manager.id})
+
             if not refresh_token:
                 logger.error("Failed to generate refresh token")
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail="Failed to generate refresh token",
                 )
-                
+
             response.set_cookie(
                 key="token",
                 value=token,
                 httponly=True,
                 secure=False,  # Set True if HTTPS
                 samesite="lax",  # or 'strict' or 'none'
-                max_age=24 * 60 * 60,  # Convert minutes to seconds if needed by set_cookie
+                max_age=24
+                * 60
+                * 60,  # Convert minutes to seconds if needed by set_cookie
             )
             response.set_cookie(
                 key="refresh_token",
@@ -114,7 +119,7 @@ class ManagerService:
                 httponly=True,
                 secure=True,
                 samesite="lax",
-                max_age=7 * 24 * 60 * 60
+                max_age=7 * 24 * 60 * 60,
             )
             return LoginSchema(
                 success=True,
@@ -391,7 +396,11 @@ class ManagerService:
             HTTPException: If auditor creation fails or internal error occurs
         """
         try:
+            pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
             auditor_data["password"] = self.__generate_strong_password()
+
+            # auditor_data["password"] = pwd_context.hash(auditor_data["password"])
+
             is_auditor_created = self.repo.create_auditor(auditor_data)
             if not is_auditor_created:
                 logger.info("Failed to create new auditor")
@@ -758,4 +767,25 @@ class ManagerService:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Internal server error occurred while unflagging audit",
+            )
+
+    def add_new_manager(self, manager_data: Dict[str, any]) -> BaseResponse:
+        try:
+            is_created = self.repo.create_new_manager(manager_data)
+
+            if not is_created:
+                logger.error(f"Failed to create new manager")
+                raise HTTPException(
+                    detail="Failed to create new manager",
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+            logger.info("Manager created successfully")
+            return BaseResponse(success=True, message="Manager created successfully.")
+        except HTTPException as e:
+            raise e
+        except Exception as e:
+            logger.error(f"Error while creating new manager, {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Internal Server error occurred while creating new manager",
             )

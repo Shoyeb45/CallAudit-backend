@@ -126,7 +126,9 @@ def get_calls(
 def approve_lead(
     call_id: str = Form(..., description="ID of the call to be approved"),
     comments: Optional[str] = Form(None, description="Optional comments for the audit"),
-    flag: Optional[str] = Form("normal", description="Whether to flag this audit, 'concern' or 'fatal'."),
+    flag: Optional[str] = Form(
+        "normal", description="Whether to flag this audit, 'concern' or 'fatal'."
+    ),
     flag_reasons: Optional[str] = Form(
         None, description="Reasons for flagging (if applicable)"
     ),
@@ -208,6 +210,26 @@ async def unflag_flagged_audit(
             - 500: If there's an internal server error during the unflag process.
     """
     return service.unflag_flagged_audit(auditor, audit_id)
+
+
+@router.post("/", description="Endpoint to add new auditor")
+def add_auditor(
+    manager_id: str,
+    name: str,
+    email: str,
+    phone: str,
+    password: str,
+    service: AuditorService = Depends(get_auditor_service),
+):
+    return service.add_new_auditor(
+        {
+            "manager_id": manager_id,
+            "name": name,
+            "email": email,
+            "phone": phone,
+            "password": password,
+        }
+    )
 
 
 @router.get(

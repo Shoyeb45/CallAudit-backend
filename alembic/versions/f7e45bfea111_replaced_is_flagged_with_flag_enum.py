@@ -19,6 +19,7 @@ depends_on: Union[str, Sequence[str], None] = None
 # Define the enum type to create
 callflag_enum = sa.Enum("NORMAL", "CONCERN", "FATAL", name="callflag")
 
+
 def upgrade() -> None:
     """Upgrade schema."""
     # Step 1: Create enum type

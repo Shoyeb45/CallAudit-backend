@@ -129,7 +129,10 @@ def logout(
         500: {"description": "Internal server error"},
     },
 )
-def check_auth(repo: ManagerRepository = Depends(get_manager_repository), user=Depends(get_current_user)):
+def check_auth(
+    repo: ManagerRepository = Depends(get_manager_repository),
+    user=Depends(get_current_user),
+):
     """
     Verify the authentication status of the current user and return user details.
 
@@ -155,13 +158,19 @@ def check_auth(repo: ManagerRepository = Depends(get_manager_repository), user=D
         role = None
         if isinstance(user, Auditor):
             role = "auditor"
-    
+
             manager = repo.get_manager(id=user.manager_id)
-            
+
             return CheckAuthSchema(
                 success=True,
                 message="User is authenticated",
-                user=AuditorSchema(id=user.id, name=user.name, email=user.email, role=role, manager=manager.name)
+                user=AuditorSchema(
+                    id=user.id,
+                    name=user.name,
+                    email=user.email,
+                    role=role,
+                    manager=manager.name,
+                ),
             )
         elif isinstance(user, Manager):
             role = "manager"
@@ -169,10 +178,11 @@ def check_auth(repo: ManagerRepository = Depends(get_manager_repository), user=D
             return CheckAuthSchema(
                 success=True,
                 message="User is authenticated",
-                user=ManagerSchema(id=user.id, name=user.name, email=user.email, role=role),
+                user=ManagerSchema(
+                    id=user.id, name=user.name, email=user.email, role=role
+                ),
             )
 
-        
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Unauthorised access, user is not auditor or manager.",
@@ -181,8 +191,10 @@ def check_auth(repo: ManagerRepository = Depends(get_manager_repository), user=D
     except HTTPException as e:
         raise e
     except Exception as e:
-        logging.error(f"Internal server error occurred while checking authentication, error: {str(e)}")
+        logging.error(
+            f"Internal server error occurred while checking authentication, error: {str(e)}"
+        )
         raise HTTPException(
             detail="Internal server error occurred while checking authentication",
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )

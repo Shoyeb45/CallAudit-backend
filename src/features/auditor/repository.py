@@ -6,6 +6,7 @@ interacting with the database for auditor-related operations. It encapsulates
 data access logic for auditors, their assigned calls, audit reports, and related statistics.
 """
 
+from passlib.context import CryptContext
 from datetime import datetime, timedelta
 import logging
 from fastapi import HTTPException, status
@@ -14,7 +15,15 @@ from sqlalchemy import Date, cast, func
 from typing import Any, Dict, List, Optional
 from features.auditor.schemas import CallResponse, CallStats, LatestCallResponse
 from features.manager.schemas import AuditFlaggedResponse, OneDayAuditData
-from models import AuditReport, Auditor, Call, CallAnalysis, CallFlag, Counsellor, Manager
+from models import (
+    AuditReport,
+    Auditor,
+    Call,
+    CallAnalysis,
+    CallFlag,
+    Counsellor,
+    Manager,
+)
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import and_, desc
 
@@ -71,8 +80,6 @@ class AuditorRepository:
             logger.error(f"Failed to get auditor, error: {str(e)}")
             return None
 
-
-               
     def get_calls(self, auditor_id: str) -> List[CallResponse] | None:
         """
         Retrieves all calls assigned to a specific auditor.
@@ -307,14 +314,14 @@ class AuditorRepository:
             comments = data.get("comments")
             flag = data.get("flag", "normal")
             flag_reasons = data.get("flag_reasons")
-            
+
             if flag != "NORMAL" and flag != "CONCERN" and flag != "FATAL":
                 logger.error("Flag is not valid, it should be NORMAL, CONCERN or FATAL")
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail="Flag is not valid, it should be NORMAL, CONCERN or FATAL"
+                    detail="Flag is not valid, it should be NORMAL, CONCERN or FATAL",
                 )
-                
+
             if not call_id:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
@@ -469,3 +476,26 @@ class AuditorRepository:
                 f"Failed to retrieve all latest flagged audit from database, error: {str(e)}"
             )
             return None
+
+    def create_new_auditor(self, auditor_data: Dict[str, any]):
+        try:
+            # hash the password and update the dictionary
+            pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+            auditor_data["password"] = pwd_context.hash(auditor_data["password"])
+
+            auditor = Auditor(**auditor_data)
+
+            self.db.add(auditor)
+            self.db.commit()
+            self.db.refresh(auditor)
+            logger.info("Succesfully created new auditor in database")
+            return True
+
+        except Exception as e:
+            logger.error(
+                f"Internal server error occurred while creating new auditor, error: {str(e)}"
+            )
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Internal server error occurred while creating new auditor",
+            )

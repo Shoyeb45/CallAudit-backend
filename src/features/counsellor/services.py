@@ -1,5 +1,6 @@
 from typing import Any, Dict
 from core.save_to_s3 import S3Saver
+from features.auditor.schemas import BaseResponse
 from features.counsellor.repository import CounsellorRepository
 from fastapi import HTTPException, status
 from datetime import datetime
@@ -360,3 +361,26 @@ class CounsellorService:
         except Exception as e:
             logger.error(f"Failed to perform AI analysis on audio, error: {str(e)}")
             raise e
+
+    def add_new_counsellor(self, counsellor_data: Dict[str, any]) -> BaseResponse:
+        try:
+            is_created = self.repo.create_new_counsellor(counsellor_data)
+
+            if not is_created:
+                logger.error(f"Failed to create new counsellor")
+                raise HTTPException(
+                    detail="Failed to create new counsellor",
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+            logger.info("Counsellor created successfully")
+            return BaseResponse(
+                success=True, message="Counsellor created successfully."
+            )
+        except HTTPException as e:
+            raise e
+        except Exception as e:
+            logger.error(f"Error while creating new counsellor, {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Internal Server error occurred while creating new counsellor",
+            )

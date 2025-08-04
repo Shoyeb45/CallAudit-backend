@@ -1,4 +1,3 @@
-
 """
 Main Application Entry Point - QC Backend Server
 
@@ -40,7 +39,7 @@ API Structure:
 Usage:
     Development:
         python main.py
-    
+
     Production:
         uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
 
@@ -56,6 +55,7 @@ Version: 0.1.0
 Created: 2025
 Last Modified: 2025-07-25
 """
+
 from core.logging import setup_logging
 from dotenv import load_dotenv
 

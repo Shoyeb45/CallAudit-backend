@@ -7,6 +7,7 @@ ManagerService, and returns appropriate responses.
 
 All routes are prefixed with '/manager'.
 """
+
 from typing import Optional
 from fastapi import APIRouter, Response, Form, Depends
 import logging
@@ -228,3 +229,18 @@ def unflag_flagged_audit(
         BaseResponse: Response with success status
     """
     return service.unflag_flagged_audit(manager, audit_id)
+
+
+@router.post(
+    "/", description="Endpoint to add new manager", response_model=BaseResponse
+)
+def add_manager(
+    name: str,
+    email: str,
+    phone: str,
+    password: Optional[str] = None,
+    service: ManagerService = Depends(get_manager_service),
+):
+    return service.add_new_manager(
+        {"name": name, "email": email, "phone": phone, "password": password}
+    )

@@ -8,8 +8,8 @@ interacting with the `AuditorRepository` for data access.
 """
 
 import logging
-import random
-import string
+from passlib.context import CryptContext
+
 from typing import Any, Dict
 from fastapi import HTTPException, status, Response
 from core.jwt_util import get_jwt_util
@@ -92,6 +92,10 @@ class AuditorService:
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail="Forbidden request, auditor is not active",
                 )
+
+            # pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+            # is_password_correct = pwd_context.verify(password, manager.password)
+
             # Compare password
             if (
                 auditor.password != password
@@ -101,7 +105,7 @@ class AuditorService:
                     detail=f"Password not matched",
                     status_code=status.HTTP_401_UNAUTHORIZED,
                 )
-                
+
             # Generate JWT
             token_payload = {
                 "id": auditor.id,
@@ -109,7 +113,7 @@ class AuditorService:
                 "email": auditor.email,
                 "role": "auditor",
             }
-            
+
             token = self.jwt_util.create_jwt_token(token_payload)
             if not token:
                 logger.error("Failed to generate JWT token")
@@ -117,9 +121,7 @@ class AuditorService:
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail="Failed to generate JWT token",
                 )
-            refresh_token = self.jwt_util.create_refresh_token({
-                "id": auditor.id
-            })
+            refresh_token = self.jwt_util.create_refresh_token({"id": auditor.id})
             if not refresh_token:
                 logger.error("Failed to generate refresh token")
                 raise HTTPException(
@@ -134,7 +136,9 @@ class AuditorService:
                 httponly=True,
                 secure=False,  # Set True if HTTPS
                 samesite="lax",  # or 'strict' or 'none'
-                max_age=24 * 60 * 60,  # Convert minutes to seconds if needed by set_cookie
+                max_age=24
+                * 60
+                * 60,  # Convert minutes to seconds if needed by set_cookie
             )
             response.set_cookie(
                 key="refresh_token",
@@ -142,9 +146,9 @@ class AuditorService:
                 httponly=True,
                 secure=True,
                 samesite="lax",
-                max_age=7 * 24 * 60 * 60
+                max_age=7 * 24 * 60 * 60,
             )
-            
+
             return LoginSchema(
                 success=True,
                 message="Auditor logged in successfully.",
@@ -162,6 +166,28 @@ class AuditorService:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Internal server error occurred while auditor login",
+            )
+
+    def add_new_auditor(self, auditor_data: Dict[str, any]) -> BaseResponse:
+        try:
+
+            is_auditor_created = self.repo.create_new_auditor(auditor_data)
+            if not is_auditor_created:
+                logger.error(f"Failed to create new auditor")
+                raise HTTPException(
+                    detail="Failed to create new auditor",
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+            logger.info("Auditor created successfully")
+            return BaseResponse(success=True, message="Auditor created successfully.")
+
+        except HTTPException as e:
+            raise e
+        except Exception as e:
+            logger.error(f"Error while creating new auditor, {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Internal Server error occurred while creating new auditor",
             )
 
     def get_calls(self, auditor: Auditor) -> CallsResponseSchema:

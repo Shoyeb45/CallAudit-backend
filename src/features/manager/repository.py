@@ -1,4 +1,3 @@
-
 """
 Manager Repository Module
 
@@ -10,7 +9,7 @@ encapsulating all database operations and providing a clean interface for the se
 Key Features:
 - Manager data retrieval and validation
 - Auditor management (creation, activation, deactivation)
-- Counsellor management (creation, activation, deactivation)  
+- Counsellor management (creation, activation, deactivation)
 - Call and audit report analytics
 - Flagged audit management
 - Statistical reporting for dashboard views
@@ -33,6 +32,7 @@ Last Modified: 25-07-2025
 Version: 0.1.0
 """
 
+from passlib.context import CryptContext
 import logging
 from fastapi import HTTPException, status
 from sqlalchemy import and_, desc, select, func, cast, Date
@@ -217,8 +217,6 @@ class ManagerRepository:
             logger.error(f"Failed to get total audited calls, error: {str(e)}")
             return None
 
-
-                
     def get_all_latest_flagged_audit(
         self, manager_id: str
     ) -> List[AuditFlaggedResponse] | None:
@@ -458,7 +456,7 @@ class ManagerRepository:
                         is_active=result.is_active,
                         total_assigned_leads=result.total_assigned_leads,
                         total_audited_leads=result.total_audited_leads,
-                        email=result.email
+                        email=result.email,
                     )
                 )
             return final_response
@@ -562,8 +560,7 @@ class ManagerRepository:
             ...     efficiency = auditor.total_audited_leads / auditor.total_assigned_leads
             ...     print(f"{auditor.name}: {efficiency:.2%} completion rate")
         """
-    
-        
+
         try:
             auditor = Auditor(**auditor_data)
             self.db.add(auditor)
@@ -752,7 +749,7 @@ class ManagerRepository:
                     detail="No call found  with given audit id",
                 )
             call.flag = CallFlag.NORMAL
-            
+
             call.updated_at = datetime.utcnow()
             self.db.commit()
             logger.info(f"Succesfully unflagged audit with audit id: {audit_id}")
@@ -760,3 +757,26 @@ class ManagerRepository:
         except Exception as e:
             logger.error(f"Failed to unflag audit, error: {str(e)}")
             return False
+
+    def create_new_manager(self, manager_data: Dict[str, any]):
+        try:
+            # hash the password and update the dictionary
+            pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+            manager_data["password"] = pwd_context.hash(manager_data["password"])
+
+            manager = Manager(**manager_data)
+
+            self.db.add(manager)
+            self.db.commit()
+            self.db.refresh(manager)
+            logger.info("Succesfully created new manager in database")
+            return True
+
+        except Exception as e:
+            logger.error(
+                f"Internal server error occurred while creating new manager, error: {str(e)}"
+            )
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Internal server error occurred while creating new manager",
+            )
