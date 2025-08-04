@@ -119,7 +119,7 @@ def main():
     logger.info(
         f"Environment variables loaded successfully, test env: {os.getenv('TEST')}"
     )
-    uvicorn.run("main:app")
+    uvicorn.run("main:app", host="0.0.0.0")
 
 
 if __name__ == "__main__":
