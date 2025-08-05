@@ -19,6 +19,9 @@ def setup_logging(
     Attributes
     ----------
     log_level: Level of log
+    log_file: Log file where logs will be stored
+    max_file_size: Maximum allowed size of the log file
+
     """
 
     # Create logs directory if it doesn't exist
