@@ -70,10 +70,10 @@ class ManagerService:
                 )
             # compare password
 
-            # pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-            # is_password_correct = pwd_context.verify(password, manager.password)
+            pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+            is_password_correct = pwd_context.verify(password, manager.password)
 
-            if manager.password != password:
+            if not is_password_correct:
                 logger.error("Password not matched")
                 raise HTTPException(
                     detail=f"Password not matched",
@@ -399,7 +399,7 @@ class ManagerService:
             pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
             auditor_data["password"] = self.__generate_strong_password()
 
-            # auditor_data["password"] = pwd_context.hash(auditor_data["password"])
+            auditor_data["password"] = pwd_context.hash(auditor_data["password"])
 
             is_auditor_created = self.repo.create_auditor(auditor_data)
             if not is_auditor_created:
