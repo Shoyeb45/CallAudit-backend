@@ -93,12 +93,12 @@ class AuditorService:
                     detail="Forbidden request, auditor is not active",
                 )
 
-            # pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-            # is_password_correct = pwd_context.verify(password, manager.password)
+            pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+            is_password_correct = pwd_context.verify(password, auditor.password)
 
             # Compare password
             if (
-                auditor.password != password
+                not is_password_correct
             ):  # TODO: Plain text comparison, consider hashing
                 logger.error("Password not matched")
                 raise HTTPException(
