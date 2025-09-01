@@ -55,7 +55,7 @@ class AppSettings(BaseSettings):
     debug: bool = Field(default=True, env="DEBUG")
     version: str = Field(default="1.0.0", env="APP_VERSION")
     api_v1_prefix: str = Field(default="/api/v1", env="API_V1_PREFIX")
-
+    frontend_url: str = Field(default="/api/v1", env="FRONTEND_URL")
     # model_config = {
     #     "extra": "allow"
     # }

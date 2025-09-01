@@ -96,7 +96,7 @@ Built using FastAPI, SQLAlchemy, and PostgreSQL.
         # Configure CORS middleware for cross-origin resource sharing
         app.add_middleware(
             CORSMiddleware,
-            allow_origins=["*"],
+            allow_origins=[app_settings.frontend_url],
             allow_credentials=True,
             allow_methods=["*"],
             allow_headers=["*"],
